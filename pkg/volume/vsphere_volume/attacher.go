@@ -194,15 +194,7 @@ func (plugin *vsphereVolumePlugin) NewDetacher() (volume.Detacher, error) {
 func (detacher *vsphereVMDKDetacher) Detach(deviceMountPath string, hostName string) error {
 
 	volPath := getVolPathfromDeviceMountPath(deviceMountPath)
-	attached, err := detacher.vsphereVolumes.DiskIsAttached(volPath, hostName)
-	if err != nil {
-		// Log error and continue with detach
-		glog.Errorf(
-			"Error checking if volume (%q) is already attached to current node (%q). Will continue and try detach anyway. err=%v",
-			volPath, hostName, err)
-	}
-
-	if err == nil && !attached {
+	if detacher.IsDetached(deviceMountPath, hostName) {
 		// Volume is already detached from node.
 		glog.Infof("detach operation was successful. volume %q is already detached from node %q.", volPath, hostName)
 		return nil
@@ -215,6 +207,18 @@ func (detacher *vsphereVMDKDetacher) Detach(deviceMountPath string, hostName str
 		return err
 	}
 	return nil
+}
+
+func (detacher *vsphereVMDKDetacher) IsDetached(deviceMountPath string, hostName string) bool {
+	volPath := getVolPathfromDeviceMountPath(deviceMountPath)
+	attached, err := detacher.vsphereVolumes.DiskIsAttached(volPath, hostName)
+	if err != nil {
+		glog.Errorf(
+			"Error checking if volume (%q) is attached (%q). err=%v",
+			volPath, hostName, err)
+		return false
+	}
+	return !attached
 }
 
 func (detacher *vsphereVMDKDetacher) WaitForDetach(devicePath string, timeout time.Duration) error {

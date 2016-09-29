@@ -210,35 +210,47 @@ func (plugin *cinderPlugin) NewDetacher() (volume.Detacher, error) {
 
 func (detacher *cinderDiskDetacher) Detach(deviceMountPath string, hostName string) error {
 	volumeID := path.Base(deviceMountPath)
-	instances, res := detacher.cinderProvider.Instances()
-	if !res {
-		return fmt.Errorf("failed to list openstack instances")
-	}
-	instanceid, err := instances.InstanceID(hostName)
-	if ind := strings.LastIndex(instanceid, "/"); ind >= 0 {
-		instanceid = instanceid[(ind + 1):]
-	}
-
-	attached, err := detacher.cinderProvider.DiskIsAttached(volumeID, instanceid)
-	if err != nil {
-		// Log error and continue with detach
-		glog.Errorf(
-			"Error checking if volume (%q) is already attached to current node (%q). Will continue and try detach anyway. err=%v",
-			volumeID, hostName, err)
-	}
-
-	if err == nil && !attached {
+	detached, instanceid := detacher.isDetached(volumeID, hostName)
+	if detached {
 		// Volume is already detached from node.
 		glog.Infof("detach operation was successful. volume %q is already detached from node %q.", volumeID, hostName)
 		return nil
 	}
 
-	if err = detacher.cinderProvider.DetachDisk(instanceid, volumeID); err != nil {
+	if err := detacher.cinderProvider.DetachDisk(instanceid, volumeID); err != nil {
 		glog.Errorf("Error detaching volume %q: %v", volumeID, err)
 		return err
 	}
 	glog.Infof("detatached volume %q from instance %q", volumeID, instanceid)
 	return nil
+}
+func (detacher *cinderDiskDetacher) IsDetached(deviceMountPath string, hostName string) bool {
+	detached, _ := detacher.isDetached(deviceMountPath, hostName)
+	return detached
+}
+
+func (detacher *cinderDiskDetacher) isDetached(deviceMountPath string, hostName string) (bool, string) {
+	volumeID := path.Base(deviceMountPath)
+	instances, res := detacher.cinderProvider.Instances()
+	if !res {
+		glog.Errorf("failed to list openstack instances error")
+		return false, ""
+	}
+	instanceid, err := instances.InstanceID(hostName)
+	if ind := strings.LastIndex(instanceid, "/"); ind >= 0 {
+		instanceid = instanceid[(ind + 1):]
+	} else {
+		glog.Errorf("Could not find the instance with the hostName %q, assuming volume is already detached", hostName)
+		return true, ""
+	}
+	attached, err := detacher.cinderProvider.DiskIsAttached(volumeID, instanceid)
+	if err != nil {
+		// Log error and continue with detach
+		glog.Errorf(
+			"Error checking if volume (%q) is attached to current node (%q), err=%v", volumeID, hostName, err)
+		return false, instanceid
+	}
+	return !attached, instanceid
 }
 
 func (detacher *cinderDiskDetacher) WaitForDetach(devicePath string, timeout time.Duration) error {

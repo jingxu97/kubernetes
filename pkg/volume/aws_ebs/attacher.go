@@ -188,25 +188,29 @@ func (plugin *awsElasticBlockStorePlugin) NewDetacher() (volume.Detacher, error)
 func (detacher *awsElasticBlockStoreDetacher) Detach(deviceMountPath string, hostName string) error {
 	volumeID := path.Base(deviceMountPath)
 
-	attached, err := detacher.awsVolumes.DiskIsAttached(volumeID, hostName)
-	if err != nil {
-		// Log error and continue with detach
-		glog.Errorf(
-			"Error checking if volume (%q) is already attached to current node (%q). Will continue and try detach anyway. err=%v",
-			volumeID, hostName, err)
-	}
-
-	if err == nil && !attached {
+	if detacher.IsDetached(volumeID, hostName) {
 		// Volume is already detached from node.
 		glog.Infof("detach operation was successful. volume %q is already detached from node %q.", volumeID, hostName)
 		return nil
 	}
 
-	if _, err = detacher.awsVolumes.DetachDisk(volumeID, hostName); err != nil {
+	if _, err := detacher.awsVolumes.DetachDisk(volumeID, hostName); err != nil {
 		glog.Errorf("Error detaching volumeID %q: %v", volumeID, err)
 		return err
 	}
 	return nil
+}
+
+func (detacher *awsElasticBlockStoreDetacher) IsDetached(deviceMountPath string, hostName string) bool {
+	volumeID := path.Base(deviceMountPath)
+	attached, err := detacher.awsVolumes.DiskIsAttached(volumeID, hostName)
+	if err != nil {
+		// Log error and continue with detach
+		glog.Errorf(
+			"Error checking if PD (%q) is attached to current node (%q), err=%v", volumeID, hostName, err)
+		return false
+	}
+	return !attached
 }
 
 func (detacher *awsElasticBlockStoreDetacher) WaitForDetach(devicePath string, timeout time.Duration) error {

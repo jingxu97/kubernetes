@@ -55,6 +55,7 @@ type Reconciler interface {
 // cleared.
 func NewReconciler(
 	loopPeriod time.Duration,
+	syncStatesPeriod time.Duration,
 	maxWaitForUnmountDuration time.Duration,
 	desiredStateOfWorld cache.DesiredStateOfWorld,
 	actualStateOfWorld cache.ActualStateOfWorld,
@@ -62,21 +63,25 @@ func NewReconciler(
 	nodeStatusUpdater statusupdater.NodeStatusUpdater) Reconciler {
 	return &reconciler{
 		loopPeriod:                loopPeriod,
+		syncStatesPeriod:          syncStatesPeriod,
 		maxWaitForUnmountDuration: maxWaitForUnmountDuration,
 		desiredStateOfWorld:       desiredStateOfWorld,
 		actualStateOfWorld:        actualStateOfWorld,
 		attacherDetacher:          attacherDetacher,
 		nodeStatusUpdater:         nodeStatusUpdater,
+		timeOfLastReconstruct:     time.Now{},
 	}
 }
 
 type reconciler struct {
 	loopPeriod                time.Duration
+	syncStatesPeriod          time.Duration
 	maxWaitForUnmountDuration time.Duration
 	desiredStateOfWorld       cache.DesiredStateOfWorld
 	actualStateOfWorld        cache.ActualStateOfWorld
 	attacherDetacher          operationexecutor.OperationExecutor
 	nodeStatusUpdater         statusupdater.NodeStatusUpdater
+	timeOfLastReconstruct:    time.Time
 }
 
 func (rc *reconciler) Run(stopCh <-chan struct{}) {
@@ -85,33 +90,40 @@ func (rc *reconciler) Run(stopCh <-chan struct{}) {
 
 func (rc *reconciler) reconciliationLoopFunc() func() {
 	return func() {
-		// Detaches are triggered before attaches so that volumes referenced by
+		rc.reconcile()
+		if time.Since(rc.timeOfLastReconstruct) > rc.syncStatesDuration {
+			rc.syncStates()
+		}
+}
+
+func (rc *reconciler) reconcile() {
+	// Detaches are triggered before attaches so that volumes referenced by
 		// pods that are rescheduled to a different node are detached first.
+		// Detach follows the following steps
+		// 1. Set the detach request time which is used to check whether elasped time since first detach request exceeds timeout
+		// 2. To make sure safety, remove volume from report as attached. It could be added back when attaching
+		// 3. Check whether volume is already detached. If so, mark volume as detached
+		// 4. Check whether it is safe to detach. If so, trigger detach
 
 		// Ensure volumes that should be detached are detached.
 		for _, attachedVolume := range rc.actualStateOfWorld.GetAttachedVolumes() {
 			if !rc.desiredStateOfWorld.VolumeExists(
 				attachedVolume.VolumeName, attachedVolume.NodeName) {
-				// Set the detach request time
+				// Set the detach request time, this time is used to check whether timeout waiting for detach
 				elapsedTime, err := rc.actualStateOfWorld.SetDetachRequestTime(attachedVolume.VolumeName, attachedVolume.NodeName)
 				if err != nil {
 					glog.Errorf("Cannot trigger detach because it fails to set detach request time with error %v", err)
 					continue
 				}
-				// Check whether timeout has reached the maximum waiting time
-				timeout := elapsedTime > rc.maxWaitForUnmountDuration
-				// Check whether volume is still mounted. Skip detach if it is still mounted unless timeout
-				if attachedVolume.MountedByNode && !timeout {
-					glog.V(12).Infof("Cannot trigger detach for volume %q on node %q because volume is still mounted",
-						attachedVolume.VolumeName,
-						attachedVolume.NodeName)
-					continue
+				// First to double check whether volume is already detached. If it is detached, attacherDetacher will mark it as detached
+				err = rc.attacherDetacher.VerifyVolumeIsDetached(attachedVolume.AttachedVolume, rc.actualStateOfWorld)
+				if err != nil {
+					glog.Errorf("Cannot verify volume is detached with error %v", err)
 				}
 
 				// Before triggering volume detach, mark volume as detached and update the node status
 				// If it fails to update node status, skip detach volume
 				rc.actualStateOfWorld.RemoveVolumeFromReportAsAttached(attachedVolume.VolumeName, attachedVolume.NodeName)
-
 				// Update Node Status to indicate volume is no longer safe to mount.
 				err = rc.nodeStatusUpdater.UpdateNodeStatuses()
 				if err != nil {
@@ -120,6 +132,16 @@ func (rc *reconciler) reconciliationLoopFunc() func() {
 						attachedVolume.VolumeName,
 						attachedVolume.NodeName,
 						err)
+					continue
+				}
+
+				// Check whether timeout has reached the maximum waiting time
+				timeout := elapsedTime > rc.maxWaitForUnmountDuration
+				// Check whether volume is still mounted. Skip detach if it is still mounted unless timeout
+				if attachedVolume.MountedByNode && !timeout {
+					glog.V(12).Infof("Cannot trigger detach for volume %q on node %q because volume is still mounted",
+						attachedVolume.VolumeName,
+						attachedVolume.NodeName)
 					continue
 				}
 
@@ -160,6 +182,10 @@ func (rc *reconciler) reconciliationLoopFunc() func() {
 				// Volume/Node exists, touch it to reset detachRequestedTime
 				glog.V(5).Infof("Volume %q/Node %q is attached--touching.", volumeToAttach.VolumeName, volumeToAttach.NodeName)
 				rc.actualStateOfWorld.ResetDetachRequestTime(volumeToAttach.VolumeName, volumeToAttach.NodeName)
+				// If there is no pending operation, it means that no detach operation is going on, it is safe to report volume as attached back
+				if !rc.attacherDetacher.IsOperationPending(volumeToAttach.VolumeName, "" /* podName */) {
+					rc.actualStateOfWorld.AddVolumeToReportAsAttached(volumeToAttach.VolumeName, volumeToAttach.NodeName)
+				}
 			} else {
 				// Volume/Node doesn't exist, spawn a goroutine to attach it
 				glog.V(5).Infof("Attempting to start AttachVolume for volume %q to node %q", volumeToAttach.VolumeName, volumeToAttach.NodeName)
@@ -188,4 +214,21 @@ func (rc *reconciler) reconciliationLoopFunc() func() {
 			glog.Infof("UpdateNodeStatuses failed with: %v", err)
 		}
 	}
+}
+
+
+func (rc *reconciler) syncStates() {
+	defer rc.updateLastSyncTime()
+
+	for _, attachedVolume := range rc.actualStateOfWorld.GetAttachedVolumes() {
+		err = rc.attacherDetacher.VerifyVolumeIsDetached(attachedVolume.AttachedVolume, rc.actualStateOfWorld)
+		if err != nil {
+			glog.Errorf("Cannot verify volume is detached with error %v", err)
+		}
+	}
+
+}
+
+func (rc *reconciler) updateLastSyncTime() {
+	rc.timeOfLastSync = time.Now()
 }

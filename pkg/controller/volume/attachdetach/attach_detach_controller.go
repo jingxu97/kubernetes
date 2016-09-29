@@ -47,6 +47,8 @@ const (
 	// successive executions
 	reconcilerLoopPeriod time.Duration = 100 * time.Millisecond
 
+	syncStatesPeriod time.Duration = 10 * time.Second
+
 	// reconcilerMaxWaitForUnmountDuration is the maximum amount of time the
 	// attach detach controller will wait for a volume to be safely unmounted
 	// from its node. Once this time has expired, the controller will assume the
@@ -121,6 +123,7 @@ func NewAttachDetachController(
 		kubeClient, nodeInformer, adc.actualStateOfWorld)
 	adc.reconciler = reconciler.NewReconciler(
 		reconcilerLoopPeriod,
+		syncStatesPeriod,
 		reconcilerMaxWaitForUnmountDuration,
 		adc.desiredStateOfWorld,
 		adc.actualStateOfWorld,

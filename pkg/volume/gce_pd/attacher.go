@@ -213,26 +213,30 @@ func (plugin *gcePersistentDiskPlugin) NewDetacher() (volume.Detacher, error) {
 func (detacher *gcePersistentDiskDetacher) Detach(deviceMountPath string, hostName string) error {
 	pdName := path.Base(deviceMountPath)
 
-	attached, err := detacher.gceDisks.DiskIsAttached(pdName, hostName)
-	if err != nil {
-		// Log error and continue with detach
-		glog.Errorf(
-			"Error checking if PD (%q) is already attached to current node (%q). Will continue and try detach anyway. err=%v",
-			pdName, hostName, err)
-	}
-
-	if err == nil && !attached {
+	if detacher.IsDetached(pdName, hostName) {
 		// Volume is not attached to node. Success!
 		glog.Infof("Detach operation is successful. PD %q was not attached to node %q.", pdName, hostName)
 		return nil
 	}
 
-	if err = detacher.gceDisks.DetachDisk(pdName, hostName); err != nil {
+	if err := detacher.gceDisks.DetachDisk(pdName, hostName); err != nil {
 		glog.Errorf("Error detaching PD %q from node %q: %v", pdName, hostName, err)
 		return err
 	}
 
 	return nil
+}
+
+func (detacher *gcePersistentDiskDetacher) IsDetached(deviceMountPath string, hostName string) bool {
+	pdName := path.Base(deviceMountPath)
+	attached, err := detacher.gceDisks.DiskIsAttached(pdName, hostName)
+	if err != nil {
+		// Log error and continue with detach
+		glog.Errorf(
+			"Error checking if PD (%q) is attached to current node (%q), err=%v", pdName, hostName, err)
+		return false
+	}
+	return !attached
 }
 
 func (detacher *gcePersistentDiskDetacher) WaitForDetach(devicePath string, timeout time.Duration) error {

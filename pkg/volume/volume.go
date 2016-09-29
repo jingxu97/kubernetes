@@ -169,6 +169,11 @@ type Detacher interface {
 	// should only be called once all bind mounts have been
 	// unmounted.
 	UnmountDevice(deviceMountPath string) error
+
+	// IsDetached check whether the disk is detached or not
+	// Return true if the disk is detached. Otherwise false
+	// and log the error during check
+	IsDetached(deviceName, hostName string) bool
 }
 
 func RenameDirectory(oldPath, newName string) (string, error) {

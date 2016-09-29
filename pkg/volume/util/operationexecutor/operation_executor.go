@@ -106,6 +106,10 @@ type OperationExecutor interface {
 	// IsOperationPending returns true if an operation for the given volumeName and podName is pending,
 	// otherwise it returns false
 	IsOperationPending(volumeName api.UniqueVolumeName, podName volumetypes.UniquePodName) bool
+
+	// VerifyVolumeIsAttached checks if the specified volume is currently detached.
+	// If the volume is detached, mark it as detached in actual state of world
+	VerifyVolumeIsDetached(volumeToDetach AttachedVolume, actualStateOfWorld ActualStateOfWorldAttacherUpdater) error
 }
 
 // NewOperationExecutor returns a new instance of OperationExecutor.
@@ -397,6 +401,19 @@ func (oe *operationExecutor) DetachVolume(
 		volumeToDetach.VolumeName, "" /* podName */, detachFunc)
 }
 
+func (oe *operationExecutor) VerifyVolumeIsDetached(
+	volumeToDetach AttachedVolume,
+	actualStateOfWorld ActualStateOfWorldAttacherUpdater) error {
+	verifyDetachFunc, err :=
+		oe.generateVerifyVolumeIsDetachedFunc(volumeToDetach, actualStateOfWorld)
+	if err != nil {
+		return err
+	}
+
+	return oe.pendingOperations.Run(
+		volumeToDetach.VolumeName, "" /* podName */, verifyDetachFunc)
+}
+
 func (oe *operationExecutor) MountVolume(
 	waitForAttachTimeout time.Duration,
 	volumeToMount VolumeToMount,
@@ -529,6 +546,57 @@ func (oe *operationExecutor) generateAttachVolumeFunc(
 
 		return nil
 	}, nil
+}
+
+func (oe *operationExecutor) generateVerifyVolumeIsDetachedFunc(
+	volumeToDetach AttachedVolume,
+	actualStateOfWorld ActualStateOfWorldAttacherUpdater) (func() error, error) {
+	attachableVolumePlugin, err :=
+		oe.volumePluginMgr.FindAttachablePluginBySpec(volumeToDetach.VolumeSpec)
+	if err != nil || attachableVolumePlugin == nil {
+		return nil, fmt.Errorf(
+			"DetachVolume.FindAttachablePluginBySpec failed for volume %q (spec.Name: %q) from node %q with: %v",
+			volumeToDetach.VolumeName,
+			volumeToDetach.VolumeSpec.Name(),
+			volumeToDetach.NodeName,
+			err)
+	}
+	volumeName, err :=
+		attachableVolumePlugin.GetVolumeName(volumeToDetach.VolumeSpec)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"DetachVolume.GetVolumeName failed for volume %q (spec.Name: %q) from node %q with: %v",
+			volumeToDetach.VolumeName,
+			volumeToDetach.VolumeSpec.Name(),
+			volumeToDetach.NodeName,
+			err)
+	}
+
+	volumeDetacher, err := attachableVolumePlugin.NewDetacher()
+	if err != nil {
+		return nil, fmt.Errorf(
+			"DetachVolume.NewDetacher failed for volume %q (spec.Name: %q) from node %q with: %v",
+			volumeToDetach.VolumeName,
+			volumeToDetach.VolumeSpec.Name(),
+			volumeToDetach.NodeName,
+			err)
+	}
+
+	return func() error {
+		if volumeDetacher.IsDetached(volumeName, volumeToDetach.NodeName) {
+			glog.Infof(
+				"Volume %q (spec.Name: %q) is already detached from node %q. Mark volume as detached",
+				volumeToDetach.VolumeName,
+				volumeToDetach.VolumeSpec.Name(),
+				volumeToDetach.NodeName)
+
+			// Update actual state of world
+			actualStateOfWorld.MarkVolumeAsDetached(
+				volumeToDetach.VolumeName, volumeToDetach.NodeName)
+		}
+		return nil
+	}, nil
+
 }
 
 func (oe *operationExecutor) generateDetachVolumeFunc(
@@ -758,11 +826,12 @@ func (oe *operationExecutor) generateMountVolumeFunc(
 			}
 
 			glog.Infof(
-				"MountVolume.MountDevice succeeded for volume %q (spec.Name: %q) pod %q (UID: %q).",
+				"MountVolume.MountDevice succeeded for volume %q (spec.Name: %q) pod %q (UID: %q) device mount path %q",
 				volumeToMount.VolumeName,
 				volumeToMount.VolumeSpec.Name(),
 				volumeToMount.PodName,
-				volumeToMount.Pod.UID)
+				volumeToMount.Pod.UID,
+				deviceMountPath)
 
 			// Update actual state of world to reflect volume is globally mounted
 			markDeviceMountedErr := actualStateOfWorld.MarkDeviceAsMounted(

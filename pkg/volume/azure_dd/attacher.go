@@ -235,6 +235,12 @@ func (detacher *azureDiskDetacher) Detach(diskName string, hostName string) erro
 	return err
 }
 
+func (detacher *azureDiskDetacher) IsDetached(diskName string, hostName string) bool {
+	// azure provider does not implement DiskIsDetached
+	// (TODO) after azure provider implements DiskIsDetached, modify this function
+	return false
+}
+
 // WaitForDetach detects if the disk is detached on the node
 func (detacher *azureDiskDetacher) WaitForDetach(devicePath string, timeout time.Duration) error {
 	return wait.Poll(checkSleepDuration, timeout, func() (bool, error) {
