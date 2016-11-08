@@ -41,7 +41,7 @@ function gc {
 trap gc EXIT
 
 if [[ ! $(${RKT_BINARY} image list | grep ${MOUNTER_IMAGE}) ]]; then
-        ${RKT_BINARY} fetch file://${MOUNTER_ACI}
+        ${RKT_BINARY} fetch --insecure-options=image file://${MOUNTER_ACI}
 fi
 
 echo "Running mount using a rkt fly container"
