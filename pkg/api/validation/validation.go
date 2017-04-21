@@ -396,7 +396,12 @@ func validateVolumeSource(source *api.VolumeSource, fldPath *field.Path) field.E
 	allErrs := field.ErrorList{}
 	if source.EmptyDir != nil {
 		numVolumes++
-		// EmptyDirs have nothing to validate
+		if !utilfeature.DefaultFeatureGate.Enabled(features.LocalStorageCapacityIsolation) {
+			unsetSizeLimit := resource.Quantity{}
+			if unsetSizeLimit.Cmp(source.EmptyDir.SizeLimit) != 0 {
+				allErrs = append(allErrs, field.Forbidden(fldPath.Child("emptyDir").Child("sizeLimit"), "LocalStorageCapacityIsolation is disabled by feature-gate"))
+			}
+		}
 	}
 	if source.HostPath != nil {
 		if numVolumes > 0 {
@@ -3564,6 +3569,9 @@ func ValidateResourceRequirements(requirements *api.ResourceRequirements, fldPat
 			} else if quantity.Cmp(requestQuantity) < 0 {
 				allErrs = append(allErrs, field.Invalid(limPath, quantity.String(), fmt.Sprintf("must be greater than or equal to %s request", resourceName)))
 			}
+		}
+		if resourceName == api.ResourceStorageOverlay && !utilfeature.DefaultFeatureGate.Enabled(features.LocalStorageCapacityIsolation) {
+			allErrs = append(allErrs, field.Forbidden(limPath, "LocalStorageCapacityIsolation is disabled by feature-gate"))
 		}
 	}
 	for resourceName, quantity := range requirements.Requests {
