@@ -41,8 +41,8 @@ import (
 	"k8s.io/kubernetes/pkg/kubelet/util/format"
 	"k8s.io/kubernetes/pkg/kubelet/volumemanager/cache"
 	"k8s.io/kubernetes/pkg/volume"
+	"k8s.io/kubernetes/pkg/volume/util"
 	volumetypes "k8s.io/kubernetes/pkg/volume/util/types"
-	"k8s.io/kubernetes/pkg/volume/util/volumehelper"
 )
 
 // DesiredStateOfWorldPopulator periodically loops through the list of active
@@ -175,7 +175,7 @@ func (dswp *desiredStateOfWorldPopulator) isPodTerminated(pod *v1.Pod) bool {
 	if !found {
 		podStatus = pod.Status
 	}
-	return volumehelper.IsPodTerminated(pod, podStatus)
+	return util.IsPodTerminated(pod, podStatus)
 }
 
 // Iterate through all pods and add to desired state of world if they don't
@@ -259,7 +259,7 @@ func (dswp *desiredStateOfWorldPopulator) processPodVolumes(pod *v1.Pod) {
 		return
 	}
 
-	uniquePodName := volumehelper.GetUniquePodName(pod)
+	uniquePodName := util.GetUniquePodName(pod)
 	if dswp.podPreviouslyProcessed(uniquePodName) {
 		return
 	}
@@ -392,7 +392,7 @@ func (dswp *desiredStateOfWorldPopulator) createVolumeSpec(
 
 		// TODO: remove feature gate check after no longer needed
 		if utilfeature.DefaultFeatureGate.Enabled(features.BlockVolume) {
-			volumeMode, err := volumehelper.GetVolumeMode(volumeSpec)
+			volumeMode, err := util.GetVolumeMode(volumeSpec)
 			if err != nil {
 				return nil, "", err
 			}
@@ -524,7 +524,7 @@ func (dswp *desiredStateOfWorldPopulator) makeVolumeMap(containers []v1.Containe
 }
 
 func getPVVolumeGidAnnotationValue(pv *v1.PersistentVolume) string {
-	if volumeGid, ok := pv.Annotations[volumehelper.VolumeGidAnnotationKey]; ok {
+	if volumeGid, ok := pv.Annotations[util.VolumeGidAnnotationKey]; ok {
 		return volumeGid
 	}
 
