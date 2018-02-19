@@ -840,7 +840,6 @@ func (og *operationGenerator) GenerateMapVolumeFunc(
 			}
 
 			glog.Infof(volumeToMount.GenerateMsgDetailed("MapVolume.WaitForAttach succeeded", fmt.Sprintf("DevicePath %q", devicePath)))
-
 			// Update actual state of world to reflect volume is globally mounted
 			markDeviceMappedErr := actualStateOfWorld.MarkDeviceAsMounted(
 				volumeToMount.VolumeName)
@@ -863,13 +862,14 @@ func (og *operationGenerator) GenerateMapVolumeFunc(
 				return volumeToMount.GenerateError("MapVolume failed", fmt.Errorf("Device path of the volume is empty"))
 			}
 		}
-		// Set up global map path under the given plugin directory using symbolic link
-		globalMapPath, err :=
-			blockVolumeMapper.GetGlobalMapPath(volumeToMount.VolumeSpec)
-		if err != nil {
+		// Update actual state of world to reflect volume is globally mounted
+		markDeviceMappedErr := actualStateOfWorld.MarkDeviceAsMounted(
+			volumeToMount.VolumeName, devicePath, globalMapPath)
+		if markDeviceMappedErr != nil {
 			// On failure, return error. Caller will log and retry.
-			return volumeToMount.GenerateError("MapVolume.GetDeviceMountPath failed", err)
+			return volumeToMount.GenerateError("MapVolume.MarkDeviceAsMounted failed", markDeviceMappedErr)
 		}
+
 		mapErr = og.blkUtil.MapDevice(devicePath, globalMapPath, string(volumeToMount.Pod.UID))
 		if mapErr != nil {
 			// On failure, return error. Caller will log and retry.
@@ -969,12 +969,16 @@ func (og *operationGenerator) GenerateUnmapVolumeFunc(
 		}
 		// Try to unmap podUID symlink under global map path dir
 		// plugins/kubernetes.io/{PluginName}/volumeDevices/{volumePluginDependentPath}/{podUID}
+<<<<<<< HEAD
 		globalUnmapPath, err :=
 			blockVolumeUnmapper.GetGlobalMapPath(volumeToUnmount.VolumeSpec)
 		if err != nil {
 			// On failure, return error. Caller will log and retry.
 			return volumeToUnmount.GenerateError("UnmapVolume.GetGlobalUnmapPath failed", err)
 		}
+=======
+		globalUnmapPath := volumeToUnmount.DeviceMountPath
+>>>>>>> 9ad102717f... Fix device unmap for non-attachable plugin case
 		unmapDeviceErr = og.blkUtil.UnmapDevice(globalUnmapPath, string(volumeToUnmount.PodUID))
 		if unmapDeviceErr != nil {
 			// On failure, return error. Caller will log and retry.
@@ -1052,12 +1056,16 @@ func (og *operationGenerator) GenerateUnmapDeviceFunc(
 	unmapDeviceFunc := func() (error, error) {
 		// Search under globalMapPath dir if all symbolic links from pods have been removed already.
 		// If symbolick links are there, pods may still refer the volume.
+<<<<<<< HEAD
 		globalMapPath, err :=
 			blockVolumeMapper.GetGlobalMapPath(deviceToDetach.VolumeSpec)
 		if err != nil {
 			// On failure, return error. Caller will log and retry.
 			return deviceToDetach.GenerateError("UnmapDevice.GetGlobalMapPath failed", err)
 		}
+=======
+		globalMapPath := deviceToDetach.DeviceMountPath
+>>>>>>> 9ad102717f... Fix device unmap for non-attachable plugin case
 		refs, err := og.blkUtil.GetDeviceSymlinkRefs(deviceToDetach.DevicePath, globalMapPath)
 		if err != nil {
 			return deviceToDetach.GenerateError("UnmapDevice.GetDeviceSymlinkRefs check failed", err)
