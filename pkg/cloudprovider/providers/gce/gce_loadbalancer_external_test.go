@@ -18,7 +18,6 @@ package gce
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,6 +33,65 @@ import (
 	"k8s.io/kubernetes/pkg/cloudprovider/providers/gce/cloud/mock"
 	kubeletapis "k8s.io/kubernetes/pkg/kubelet/apis"
 )
+
+const (
+	projectID   = "test-project"
+	region      = "us-central1"
+	zoneName    = "us-central1-b"
+	nodeName    = "test-node-1"
+	clusterName = "Test Cluster Name"
+	clusterID   = "test-cluster-id"
+	serviceName = ""
+)
+
+var apiService = &v1.Service{
+	Spec: v1.ServiceSpec{
+		SessionAffinity: v1.ServiceAffinityClientIP,
+		Type:            v1.ServiceTypeClusterIP,
+		Ports:           []v1.ServicePort{{Protocol: v1.ProtocolTCP, Port: int32(123)}},
+	},
+}
+
+func fakeGCECloud() (*GCECloud, error) {
+	client, err := newOauthClient(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := compute.New(client)
+	if err != nil {
+		return nil, err
+	}
+
+	// Used in disk unit tests
+	fakeManager := newFakeManager(projectID, region)
+	zonesWithNodes := createNodeZones([]string{zoneName})
+
+	alphaFeatureGate, err := NewAlphaFeatureGate([]string{})
+	if err != nil {
+		return nil, err
+	}
+
+	gce := &GCECloud{
+		region:             region,
+		service:            service,
+		manager:            fakeManager,
+		managedZones:       []string{zoneName},
+		projectID:          projectID,
+		networkProjectID:   projectID,
+		AlphaFeatureGate:   alphaFeatureGate,
+		nodeZones:          zonesWithNodes,
+		nodeInformerSynced: func() bool { return true },
+	}
+
+	cloud := cloud.NewMockGCE(&gceProjectRouter{gce})
+	cloud.MockTargetPools.AddInstanceHook = mock.AddInstanceHook
+	cloud.MockTargetPools.RemoveInstanceHook = mock.RemoveInstanceHook
+
+	gce.c = cloud
+
+	return gce, nil
+}
 
 func TestEnsureStaticIP(t *testing.T) {
 	fcas := NewFakeCloudAddressService()
@@ -244,68 +302,6 @@ func TestDeleteAddressWithWrongTier(t *testing.T) {
 			}
 		})
 	}
-}
-
-const (
-	gceProjectId = "test-project"
-	gceRegion    = "us-central1"
-	zoneName     = "us-central1-b"
-	nodeName     = "test-node-1"
-	clusterName  = "Test Cluster Name"
-	clusterID    = "test-cluster-id"
-)
-
-var apiService = &v1.Service{
-	Spec: v1.ServiceSpec{
-		SessionAffinity: v1.ServiceAffinityClientIP,
-		Type:            v1.ServiceTypeClusterIP,
-		Ports:           []v1.ServicePort{{Protocol: v1.ProtocolTCP, Port: int32(123)}},
-	},
-}
-
-type fakeRoundTripper struct{}
-
-func (*fakeRoundTripper) RoundTrip(*http.Request) (*http.Response, error) {
-	return nil, fmt.Errorf("err: test used fake http client")
-}
-
-func fakeGCECloud() (*GCECloud, error) {
-	c := &http.Client{Transport: &fakeRoundTripper{}}
-
-	service, err := compute.New(c)
-	if err != nil {
-		return nil, err
-	}
-
-	// Used in disk unit tests
-	fakeManager := newFakeManager(gceProjectId, gceRegion)
-	zonesWithNodes := createNodeZones([]string{zoneName})
-
-	alphaFeatureGate, err := NewAlphaFeatureGate([]string{})
-	if err != nil {
-		return nil, err
-	}
-
-	gce := &GCECloud{
-		region:             gceRegion,
-		service:            service,
-		manager:            fakeManager,
-		managedZones:       []string{zoneName},
-		projectID:          gceProjectId,
-		networkProjectID:   gceProjectId,
-		AlphaFeatureGate:   alphaFeatureGate,
-		nodeZones:          zonesWithNodes,
-		nodeInformerSynced: func() bool { return true },
-	}
-
-	cloud := cloud.NewMockGCE(&gceProjectRouter{gce})
-	cloud.MockTargetPools.AddInstanceHook = mock.AddInstanceHook
-	cloud.MockTargetPools.RemoveInstanceHook = mock.RemoveInstanceHook
-	cloud.MockAlphaForwardingRules.GetHook = mock.GetAlphaFwdRuleHook
-
-	gce.c = cloud
-
-	return gce, nil
 }
 
 func createAndInsertNodes(gce *GCECloud, nodeNames []string) ([]*v1.Node, error) {
