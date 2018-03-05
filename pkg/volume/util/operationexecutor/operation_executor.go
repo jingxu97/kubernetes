@@ -113,7 +113,7 @@ type OperationExecutor interface {
 	// For 'Block' volumeMode, this method unmaps symbolic link to the volume
 	// from both the pod device map path in volumeToUnmount and global map path.
 	// And then, updates the actual state of the world to reflect that.
-	UnmountVolume(volumeToUnmount MountedVolume, actualStateOfWorld ActualStateOfWorldMounterUpdater) error
+	UnmountVolume(volumeToUnmount MountedVolume, actualStateOfWorld ActualStateOfWorldMounterUpdater, podsDir string) error
 
 	// If a volume has 'Filesystem' volumeMode, UnmountDevice unmounts the
 	// volumes global mount path from the device (for attachable volumes only,
@@ -735,7 +735,8 @@ func (oe *operationExecutor) MountVolume(
 
 func (oe *operationExecutor) UnmountVolume(
 	volumeToUnmount MountedVolume,
-	actualStateOfWorld ActualStateOfWorldMounterUpdater) error {
+	actualStateOfWorld ActualStateOfWorldMounterUpdater,
+	podsDir string) error {
 	fsVolume, err := util.CheckVolumeModeFilesystem(volumeToUnmount.VolumeSpec)
 	if err != nil {
 		return err
@@ -745,7 +746,7 @@ func (oe *operationExecutor) UnmountVolume(
 		// Filesystem volume case
 		// Unmount a volume if a volume is mounted
 		generatedOperations, err = oe.operationGenerator.GenerateUnmountVolumeFunc(
-			volumeToUnmount, actualStateOfWorld)
+			volumeToUnmount, actualStateOfWorld, podsDir)
 	} else {
 		// Block volume case
 		// Unmap a volume if a volume is mapped
