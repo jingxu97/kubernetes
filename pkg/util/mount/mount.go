@@ -21,11 +21,8 @@ package mount
 import (
 	"os"
 	"path/filepath"
-<<<<<<< HEAD
-=======
 	"strings"
 	"syscall"
->>>>>>> 5110db5087... Lock subPath volumes
 )
 
 type FileType string

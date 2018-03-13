@@ -1,12 +1,9 @@
 /*
 Copyright 2017 The Kubernetes Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +15,8 @@ package azure
 
 import (
 	"context"
-	"net/http"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/arm/compute"
@@ -34,13 +31,20 @@ import (
 	"k8s.io/client-go/util/flowcontrol"
 )
 
-// Creates an error for rate limiting errors
-func createArmRateLimitErr(isWrite bool, opName string) error {
+// Helpers for rate limiting error/error channel creation
+func createARMRateLimitErr(isWrite bool, opName string) error {
 	opType := "read"
 	if isWrite {
 		opType = "write"
 	}
 	return fmt.Errorf("azure - ARM rate limited(%s) for operation:%s", opType, opName)
+}
+
+func createARMRateLimitErrChannel(isWrite bool, opName string) chan error {
+	err := createARMRateLimitErr(isWrite, opName)
+	errChan := make(chan error, 1)
+	errChan <- err
+	return errChan
 }
 
 // VirtualMachinesClient defines needed functions for azure compute.VirtualMachinesClient
@@ -175,10 +179,8 @@ func newAzVirtualMachinesClient(config *azClientConfig) *azVirtualMachinesClient
 func (az *azVirtualMachinesClient) CreateOrUpdate(resourceGroupName string, VMName string, parameters compute.VirtualMachine, cancel <-chan struct{}) (<-chan compute.VirtualMachine, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "NSGCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "NSGCreateOrUpdate")
 		resultChan := make(chan compute.VirtualMachine, 1)
-		errChan <- err
 		resultChan <- compute.VirtualMachine{}
 		return resultChan, errChan
 	}
@@ -198,8 +200,8 @@ func (az *azVirtualMachinesClient) CreateOrUpdate(resourceGroupName string, VMNa
 }
 
 func (az *azVirtualMachinesClient) Get(resourceGroupName string, VMName string, expand compute.InstanceViewTypes) (result compute.VirtualMachine, err error) {
-	err = createArmRateLimitErr(false, "VMGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMGet")
 		return
 	}
 
@@ -215,8 +217,8 @@ func (az *azVirtualMachinesClient) Get(resourceGroupName string, VMName string, 
 }
 
 func (az *azVirtualMachinesClient) List(resourceGroupName string) (result compute.VirtualMachineListResult, err error) {
-	err = createArmRateLimitErr(false, "VMList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMList")
 		return
 	}
 
@@ -232,8 +234,8 @@ func (az *azVirtualMachinesClient) List(resourceGroupName string) (result comput
 }
 
 func (az *azVirtualMachinesClient) ListNextResults(resourceGroupName string, lastResults compute.VirtualMachineListResult) (result compute.VirtualMachineListResult, err error) {
-	err = createArmRateLimitErr(false, "VMListNextResults")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMListNextResults")
 		return
 	}
 
@@ -270,13 +272,10 @@ func newAzInterfacesClient(config *azClientConfig) *azInterfacesClient {
 }
 
 func (az *azInterfacesClient) CreateOrUpdate(resourceGroupName string, networkInterfaceName string, parameters network.Interface, cancel <-chan struct{}) (<-chan network.Interface, <-chan error) {
-
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "NiCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "NiCreateOrUpdate")
 		resultChan := make(chan network.Interface, 1)
-		errChan <- err
 		resultChan <- network.Interface{}
 		return resultChan, errChan
 	}
@@ -296,8 +295,8 @@ func (az *azInterfacesClient) CreateOrUpdate(resourceGroupName string, networkIn
 }
 
 func (az *azInterfacesClient) Get(resourceGroupName string, networkInterfaceName string, expand string) (result network.Interface, err error) {
-	err = createArmRateLimitErr(false, "NicGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "NicGet")
 		return
 	}
 
@@ -313,8 +312,8 @@ func (az *azInterfacesClient) Get(resourceGroupName string, networkInterfaceName
 }
 
 func (az *azInterfacesClient) GetVirtualMachineScaleSetNetworkInterface(resourceGroupName string, virtualMachineScaleSetName string, virtualmachineIndex string, networkInterfaceName string, expand string) (result network.Interface, err error) {
-	err = createArmRateLimitErr(false, "NicGetVirtualMachineScaleSetNetworkInterface")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "NicGetVirtualMachineScaleSetNetworkInterface")
 		return
 	}
 
@@ -353,10 +352,8 @@ func newAzLoadBalancersClient(config *azClientConfig) *azLoadBalancersClient {
 func (az *azLoadBalancersClient) CreateOrUpdate(resourceGroupName string, loadBalancerName string, parameters network.LoadBalancer, cancel <-chan struct{}) (<-chan network.LoadBalancer, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "LBCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "LBCreateOrUpdate")
 		resultChan := make(chan network.LoadBalancer, 1)
-		errChan <- err
 		resultChan <- network.LoadBalancer{}
 		return resultChan, errChan
 	}
@@ -378,10 +375,8 @@ func (az *azLoadBalancersClient) CreateOrUpdate(resourceGroupName string, loadBa
 func (az *azLoadBalancersClient) Delete(resourceGroupName string, loadBalancerName string, cancel <-chan struct{}) (<-chan autorest.Response, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "LBDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "LBDelete")
 		resultChan := make(chan autorest.Response, 1)
-		errChan <- err
 		resultChan <- autorest.Response{}
 		return resultChan, errChan
 	}
@@ -401,8 +396,8 @@ func (az *azLoadBalancersClient) Delete(resourceGroupName string, loadBalancerNa
 }
 
 func (az *azLoadBalancersClient) Get(resourceGroupName string, loadBalancerName string, expand string) (result network.LoadBalancer, err error) {
-	err = createArmRateLimitErr(false, "LBGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "LBGet")
 		return
 	}
 
@@ -418,8 +413,8 @@ func (az *azLoadBalancersClient) Get(resourceGroupName string, loadBalancerName 
 }
 
 func (az *azLoadBalancersClient) List(resourceGroupName string) (result network.LoadBalancerListResult, err error) {
-	err = createArmRateLimitErr(false, "LBList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "LBList")
 		return
 	}
 
@@ -435,8 +430,8 @@ func (az *azLoadBalancersClient) List(resourceGroupName string) (result network.
 }
 
 func (az *azLoadBalancersClient) ListNextResults(resourceGroupName string, lastResult network.LoadBalancerListResult) (result network.LoadBalancerListResult, err error) {
-	err = createArmRateLimitErr(false, "LBListNextResults")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "LBListNextResults")
 		return
 	}
 
@@ -475,10 +470,8 @@ func newAzPublicIPAddressesClient(config *azClientConfig) *azPublicIPAddressesCl
 func (az *azPublicIPAddressesClient) CreateOrUpdate(resourceGroupName string, publicIPAddressName string, parameters network.PublicIPAddress, cancel <-chan struct{}) (<-chan network.PublicIPAddress, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "PublicIPCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "PublicIPCreateOrUpdate")
 		resultChan := make(chan network.PublicIPAddress, 1)
-		errChan <- err
 		resultChan <- network.PublicIPAddress{}
 		return resultChan, errChan
 	}
@@ -500,10 +493,8 @@ func (az *azPublicIPAddressesClient) CreateOrUpdate(resourceGroupName string, pu
 func (az *azPublicIPAddressesClient) Delete(resourceGroupName string, publicIPAddressName string, cancel <-chan struct{}) (<-chan autorest.Response, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "PublicIPDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "PublicIPDelete")
 		resultChan := make(chan autorest.Response, 1)
-		errChan <- err
 		resultChan <- autorest.Response{}
 		return resultChan, errChan
 	}
@@ -523,8 +514,8 @@ func (az *azPublicIPAddressesClient) Delete(resourceGroupName string, publicIPAd
 }
 
 func (az *azPublicIPAddressesClient) Get(resourceGroupName string, publicIPAddressName string, expand string) (result network.PublicIPAddress, err error) {
-	err = createArmRateLimitErr(false, "PublicIPGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "PublicIPGet")
 		return
 	}
 
@@ -540,8 +531,8 @@ func (az *azPublicIPAddressesClient) Get(resourceGroupName string, publicIPAddre
 }
 
 func (az *azPublicIPAddressesClient) List(resourceGroupName string) (result network.PublicIPAddressListResult, err error) {
-	err = createArmRateLimitErr(false, "PublicIPList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "PublicIPList")
 		return
 	}
 
@@ -557,8 +548,8 @@ func (az *azPublicIPAddressesClient) List(resourceGroupName string) (result netw
 }
 
 func (az *azPublicIPAddressesClient) ListNextResults(resourceGroupName string, lastResults network.PublicIPAddressListResult) (result network.PublicIPAddressListResult, err error) {
-	err = createArmRateLimitErr(false, "PublicIPListNextResults")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "PublicIPListNextResults")
 		return
 	}
 
@@ -597,10 +588,8 @@ func newAzSubnetsClient(config *azClientConfig) *azSubnetsClient {
 func (az *azSubnetsClient) CreateOrUpdate(resourceGroupName string, virtualNetworkName string, subnetName string, subnetParameters network.Subnet, cancel <-chan struct{}) (<-chan network.Subnet, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "SubnetCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "SubnetCreateOrUpdate")
 		resultChan := make(chan network.Subnet, 1)
-		errChan <- err
 		resultChan <- network.Subnet{}
 		return resultChan, errChan
 	}
@@ -622,10 +611,8 @@ func (az *azSubnetsClient) CreateOrUpdate(resourceGroupName string, virtualNetwo
 func (az *azSubnetsClient) Delete(resourceGroupName string, virtualNetworkName string, subnetName string, cancel <-chan struct{}) (<-chan autorest.Response, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "SubnetDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "SubnetDelete")
 		resultChan := make(chan autorest.Response, 1)
-		errChan <- err
 		resultChan <- autorest.Response{}
 		return resultChan, errChan
 	}
@@ -645,8 +632,8 @@ func (az *azSubnetsClient) Delete(resourceGroupName string, virtualNetworkName s
 }
 
 func (az *azSubnetsClient) Get(resourceGroupName string, virtualNetworkName string, subnetName string, expand string) (result network.Subnet, err error) {
-	err = createArmRateLimitErr(false, "SubnetGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "SubnetGet")
 		return
 	}
 
@@ -662,8 +649,8 @@ func (az *azSubnetsClient) Get(resourceGroupName string, virtualNetworkName stri
 }
 
 func (az *azSubnetsClient) List(resourceGroupName string, virtualNetworkName string) (result network.SubnetListResult, err error) {
-	err = createArmRateLimitErr(false, "SubnetList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "SubnetList")
 		return
 	}
 
@@ -702,10 +689,8 @@ func newAzSecurityGroupsClient(config *azClientConfig) *azSecurityGroupsClient {
 func (az *azSecurityGroupsClient) CreateOrUpdate(resourceGroupName string, networkSecurityGroupName string, parameters network.SecurityGroup, cancel <-chan struct{}) (<-chan network.SecurityGroup, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "NSGCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "NSGCreateOrUpdate")
 		resultChan := make(chan network.SecurityGroup, 1)
-		errChan <- err
 		resultChan <- network.SecurityGroup{}
 		return resultChan, errChan
 	}
@@ -727,10 +712,8 @@ func (az *azSecurityGroupsClient) CreateOrUpdate(resourceGroupName string, netwo
 func (az *azSecurityGroupsClient) Delete(resourceGroupName string, networkSecurityGroupName string, cancel <-chan struct{}) (<-chan autorest.Response, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "NSGDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "NSGDelete")
 		resultChan := make(chan autorest.Response, 1)
-		errChan <- err
 		resultChan <- autorest.Response{}
 		return resultChan, errChan
 	}
@@ -750,8 +733,8 @@ func (az *azSecurityGroupsClient) Delete(resourceGroupName string, networkSecuri
 }
 
 func (az *azSecurityGroupsClient) Get(resourceGroupName string, networkSecurityGroupName string, expand string) (result network.SecurityGroup, err error) {
-	err = createArmRateLimitErr(false, "NSGGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "NSGGet")
 		return
 	}
 
@@ -767,8 +750,8 @@ func (az *azSecurityGroupsClient) Get(resourceGroupName string, networkSecurityG
 }
 
 func (az *azSecurityGroupsClient) List(resourceGroupName string) (result network.SecurityGroupListResult, err error) {
-	err = createArmRateLimitErr(false, "NSGList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "NSGList")
 		return
 	}
 
@@ -785,14 +768,9 @@ func (az *azSecurityGroupsClient) List(resourceGroupName string) (result network
 
 // azVirtualMachineScaleSetsClient implements VirtualMachineScaleSetsClient.
 type azVirtualMachineScaleSetsClient struct {
-<<<<<<< HEAD
-	client      computepreview.VirtualMachineScaleSetsClient
-	rateLimiter flowcontrol.RateLimiter
-=======
-	client            compute.VirtualMachineScaleSetsClient
+	client            computepreview.VirtualMachineScaleSetsClient
 	rateLimiterReader flowcontrol.RateLimiter
 	rateLimiterWriter flowcontrol.RateLimiter
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 }
 
 func newAzVirtualMachineScaleSetsClient(config *azClientConfig) *azVirtualMachineScaleSetsClient {
@@ -809,22 +787,13 @@ func newAzVirtualMachineScaleSetsClient(config *azClientConfig) *azVirtualMachin
 	}
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetsClient) CreateOrUpdate(ctx context.Context, resourceGroupName string, VMScaleSetName string, parameters computepreview.VirtualMachineScaleSet) (resp *http.Response, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetsClient) CreateOrUpdate(resourceGroupName string, VMScaleSetName string, parameters compute.VirtualMachineScaleSet, cancel <-chan struct{}) (<-chan compute.VirtualMachineScaleSet, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "VMSSCreateOrUpdate")
-		errChan := make(chan error, 1)
-		resultChan := make(chan compute.VirtualMachineScaleSet, 1)
-		errChan <- err
-		resultChan <- compute.VirtualMachineScaleSet{}
-		return resultChan, errChan
+		err = createARMRateLimitErr(true, "VMSSCreateOrUpdate")
+		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetsClient.CreateOrUpdate(%q,%q): start", resourceGroupName, VMScaleSetName)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetsClient.CreateOrUpdate(%q,%q): end", resourceGroupName, VMScaleSetName)
@@ -842,17 +811,12 @@ func (az *azVirtualMachineScaleSetsClient) CreateOrUpdate(resourceGroupName stri
 	return future.Response(), err
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetsClient) Get(ctx context.Context, resourceGroupName string, VMScaleSetName string) (result computepreview.VirtualMachineScaleSet, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetsClient) Get(resourceGroupName string, VMScaleSetName string) (result compute.VirtualMachineScaleSet, err error) {
-	err = createArmRateLimitErr(false, "VMSSGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMSSGet")
 		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetsClient.Get(%q,%q): start", resourceGroupName, VMScaleSetName)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetsClient.Get(%q,%q): end", resourceGroupName, VMScaleSetName)
@@ -864,17 +828,12 @@ func (az *azVirtualMachineScaleSetsClient) Get(resourceGroupName string, VMScale
 	return
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetsClient) List(ctx context.Context, resourceGroupName string) (result []computepreview.VirtualMachineScaleSet, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetsClient) List(resourceGroupName string) (result compute.VirtualMachineScaleSetListResult, err error) {
-	err = createArmRateLimitErr(false, "VMSSList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMSSList")
 		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetsClient.List(%q,%q): start", resourceGroupName)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetsClient.List(%q,%q): end", resourceGroupName)
@@ -887,24 +846,11 @@ func (az *azVirtualMachineScaleSetsClient) List(resourceGroupName string) (resul
 		return nil, err
 	}
 
-<<<<<<< HEAD
 	result = make([]computepreview.VirtualMachineScaleSet, 0)
 	for ; iterator.NotDone(); err = iterator.Next() {
 		if err != nil {
 			return nil, err
 		}
-=======
-func (az *azVirtualMachineScaleSetsClient) ListNextResults(resourceGroupName string, lastResults compute.VirtualMachineScaleSetListResult) (result compute.VirtualMachineScaleSetListResult, err error) {
-	err = createArmRateLimitErr(false, "VMSSListNextResults")
-	if !az.rateLimiterReader.TryAccept() {
-		return
-	}
-
-	glog.V(10).Infof("azVirtualMachineScaleSetsClient.ListNextResults(%q): start", lastResults)
-	defer func() {
-		glog.V(10).Infof("azVirtualMachineScaleSetsClient.ListNextResults(%q): end", lastResults)
-	}()
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 
 		result = append(result, iterator.Value())
 	}
@@ -912,22 +858,13 @@ func (az *azVirtualMachineScaleSetsClient) ListNextResults(resourceGroupName str
 	return result, nil
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetsClient) UpdateInstances(ctx context.Context, resourceGroupName string, VMScaleSetName string, VMInstanceIDs computepreview.VirtualMachineScaleSetVMInstanceRequiredIDs) (resp *http.Response, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetsClient) UpdateInstances(resourceGroupName string, VMScaleSetName string, VMInstanceIDs compute.VirtualMachineScaleSetVMInstanceRequiredIDs, cancel <-chan struct{}) (<-chan compute.OperationStatusResponse, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "VMSSUpdateInstances")
-		errChan := make(chan error, 1)
-		resultChan := make(chan compute.OperationStatusResponse, 1)
-		errChan <- err
-		resultChan <- compute.OperationStatusResponse{}
-		return resultChan, errChan
+		err = createARMRateLimitErr(true, "VMSSUpdateInstances")
+		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetsClient.UpdateInstances(%q,%q,%q): start", resourceGroupName, VMScaleSetName, VMInstanceIDs)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetsClient.UpdateInstances(%q,%q,%q): end", resourceGroupName, VMScaleSetName, VMInstanceIDs)
@@ -947,14 +884,9 @@ func (az *azVirtualMachineScaleSetsClient) UpdateInstances(resourceGroupName str
 
 // azVirtualMachineScaleSetVMsClient implements VirtualMachineScaleSetVMsClient.
 type azVirtualMachineScaleSetVMsClient struct {
-<<<<<<< HEAD
-	client      computepreview.VirtualMachineScaleSetVMsClient
-	rateLimiter flowcontrol.RateLimiter
-=======
-	client            compute.VirtualMachineScaleSetVMsClient
+	client            computepreview.VirtualMachineScaleSetVMsClient
 	rateLimiterReader flowcontrol.RateLimiter
 	rateLimiterWriter flowcontrol.RateLimiter
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 }
 
 func newAzVirtualMachineScaleSetVMsClient(config *azClientConfig) *azVirtualMachineScaleSetVMsClient {
@@ -971,17 +903,12 @@ func newAzVirtualMachineScaleSetVMsClient(config *azClientConfig) *azVirtualMach
 	}
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetVMsClient) Get(ctx context.Context, resourceGroupName string, VMScaleSetName string, instanceID string) (result computepreview.VirtualMachineScaleSetVM, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetVMsClient) Get(resourceGroupName string, VMScaleSetName string, instanceID string) (result compute.VirtualMachineScaleSetVM, err error) {
-	err = createArmRateLimitErr(false, "VMSSGet")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMSSGet")
 		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.Get(%q,%q,%q): start", resourceGroupName, VMScaleSetName, instanceID)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.Get(%q,%q,%q): end", resourceGroupName, VMScaleSetName, instanceID)
@@ -993,17 +920,12 @@ func (az *azVirtualMachineScaleSetVMsClient) Get(resourceGroupName string, VMSca
 	return
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetVMsClient) GetInstanceView(ctx context.Context, resourceGroupName string, VMScaleSetName string, instanceID string) (result computepreview.VirtualMachineScaleSetVMInstanceView, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetVMsClient) GetInstanceView(resourceGroupName string, VMScaleSetName string, instanceID string) (result compute.VirtualMachineScaleSetVMInstanceView, err error) {
-	err = createArmRateLimitErr(false, "VMSSGetInstanceView")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMSSGetInstanceView")
 		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.GetInstanceView(%q,%q,%q): start", resourceGroupName, VMScaleSetName, instanceID)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.GetInstanceView(%q,%q,%q): end", resourceGroupName, VMScaleSetName, instanceID)
@@ -1015,17 +937,12 @@ func (az *azVirtualMachineScaleSetVMsClient) GetInstanceView(resourceGroupName s
 	return
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetVMsClient) List(ctx context.Context, resourceGroupName string, virtualMachineScaleSetName string, filter string, selectParameter string, expand string) (result []computepreview.VirtualMachineScaleSetVM, err error) {
-	az.rateLimiter.Accept()
-=======
-func (az *azVirtualMachineScaleSetVMsClient) List(resourceGroupName string, virtualMachineScaleSetName string, filter string, selectParameter string, expand string) (result compute.VirtualMachineScaleSetVMListResult, err error) {
-	err = createArmRateLimitErr(false, "VMSSList")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "VMSSList")
 		return
 	}
 
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
 	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.List(%q,%q,%q): start", resourceGroupName, virtualMachineScaleSetName, filter)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.List(%q,%q,%q): end", resourceGroupName, virtualMachineScaleSetName, filter)
@@ -1050,19 +967,13 @@ func (az *azVirtualMachineScaleSetVMsClient) List(resourceGroupName string, virt
 	return result, nil
 }
 
-<<<<<<< HEAD
 func (az *azVirtualMachineScaleSetVMsClient) Update(ctx context.Context, resourceGroupName string, VMScaleSetName string, instanceID string, parameters computepreview.VirtualMachineScaleSetVM) (resp *http.Response, err error) {
-	az.rateLimiter.Accept()
-	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.Update(%q,%q,%q): start", resourceGroupName, VMScaleSetName, instanceID)
-=======
-func (az *azVirtualMachineScaleSetVMsClient) ListNextResults(resourceGroupName string, lastResults compute.VirtualMachineScaleSetVMListResult) (result compute.VirtualMachineScaleSetVMListResult, err error) {
-	err = createArmRateLimitErr(false, "VMSSListNextResults")
-	if !az.rateLimiterReader.TryAccept() {
+	if !az.rateLimiterWriter.TryAccept() {
+		err = createARMRateLimitErr(true, "VMSSUpdate")
 		return
 	}
 
-	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.ListNextResults(%q,%q,%q): start", lastResults)
->>>>>>> 5bf6b0fd70... WIP - create read/writer rate limiter
+	glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.Update(%q,%q,%q): start", resourceGroupName, VMScaleSetName, instanceID)
 	defer func() {
 		glog.V(10).Infof("azVirtualMachineScaleSetVMsClient.Update(%q,%q,%q): end", resourceGroupName, VMScaleSetName, instanceID)
 	}()
@@ -1103,10 +1014,8 @@ func newAzRoutesClient(config *azClientConfig) *azRoutesClient {
 func (az *azRoutesClient) CreateOrUpdate(resourceGroupName string, routeTableName string, routeName string, routeParameters network.Route, cancel <-chan struct{}) (<-chan network.Route, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "RouteCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "RouteCreateOrUpdate")
 		resultChan := make(chan network.Route, 1)
-		errChan <- err
 		resultChan <- network.Route{}
 		return resultChan, errChan
 	}
@@ -1128,10 +1037,8 @@ func (az *azRoutesClient) CreateOrUpdate(resourceGroupName string, routeTableNam
 func (az *azRoutesClient) Delete(resourceGroupName string, routeTableName string, routeName string, cancel <-chan struct{}) (<-chan autorest.Response, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "RouteDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "RouteDelete")
 		resultChan := make(chan autorest.Response, 1)
-		errChan <- err
 		resultChan <- autorest.Response{}
 		return resultChan, errChan
 	}
@@ -1174,10 +1081,8 @@ func newAzRouteTablesClient(config *azClientConfig) *azRouteTablesClient {
 func (az *azRouteTablesClient) CreateOrUpdate(resourceGroupName string, routeTableName string, parameters network.RouteTable, cancel <-chan struct{}) (<-chan network.RouteTable, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "RouteTableCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "RouteTableCreateOrUpdate")
 		resultChan := make(chan network.RouteTable, 1)
-		errChan <- err
 		resultChan <- network.RouteTable{}
 		return resultChan, errChan
 	}
@@ -1197,8 +1102,8 @@ func (az *azRouteTablesClient) CreateOrUpdate(resourceGroupName string, routeTab
 }
 
 func (az *azRouteTablesClient) Get(resourceGroupName string, routeTableName string, expand string) (result network.RouteTable, err error) {
-	err = createArmRateLimitErr(false, "GetRouteTable")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "GetRouteTable")
 		return
 	}
 
@@ -1236,10 +1141,8 @@ func newAzStorageAccountClient(config *azClientConfig) *azStorageAccountClient {
 func (az *azStorageAccountClient) Create(resourceGroupName string, accountName string, parameters storage.AccountCreateParameters, cancel <-chan struct{}) (<-chan storage.Account, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "StorageAccountCreate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "StorageAccountCreate")
 		resultChan := make(chan storage.Account, 1)
-		errChan <- err
 		resultChan <- storage.Account{}
 		return resultChan, errChan
 	}
@@ -1259,8 +1162,8 @@ func (az *azStorageAccountClient) Create(resourceGroupName string, accountName s
 }
 
 func (az *azStorageAccountClient) Delete(resourceGroupName string, accountName string) (result autorest.Response, err error) {
-	err = createArmRateLimitErr(false, "DeleteStorageAccount")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "DeleteStorageAccount")
 		return
 	}
 
@@ -1276,8 +1179,8 @@ func (az *azStorageAccountClient) Delete(resourceGroupName string, accountName s
 }
 
 func (az *azStorageAccountClient) ListKeys(resourceGroupName string, accountName string) (result storage.AccountListKeysResult, err error) {
-	err = createArmRateLimitErr(false, "ListStorageAccountKeys")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "ListStorageAccountKeys")
 		return
 	}
 
@@ -1293,8 +1196,8 @@ func (az *azStorageAccountClient) ListKeys(resourceGroupName string, accountName
 }
 
 func (az *azStorageAccountClient) ListByResourceGroup(resourceGroupName string) (result storage.AccountListResult, err error) {
-	err = createArmRateLimitErr(false, "ListStorageAccountsByResourceGroup")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "ListStorageAccountsByResourceGroup")
 		return
 	}
 
@@ -1310,8 +1213,8 @@ func (az *azStorageAccountClient) ListByResourceGroup(resourceGroupName string) 
 }
 
 func (az *azStorageAccountClient) GetProperties(resourceGroupName string, accountName string) (result storage.Account, err error) {
-	err = createArmRateLimitErr(false, "GetStorageAccount/Properties")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "GetStorageAccount/Properties")
 		return
 	}
 
@@ -1347,13 +1250,10 @@ func newAzDisksClient(config *azClientConfig) *azDisksClient {
 }
 
 func (az *azDisksClient) CreateOrUpdate(resourceGroupName string, diskName string, diskParameter disk.Model, cancel <-chan struct{}) (<-chan disk.Model, <-chan error) {
-
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "DiskCreateOrUpdate")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "DiskCreateOrUpdate")
 		resultChan := make(chan disk.Model, 1)
-		errChan <- err
 		resultChan <- disk.Model{}
 		return resultChan, errChan
 	}
@@ -1375,10 +1275,8 @@ func (az *azDisksClient) CreateOrUpdate(resourceGroupName string, diskName strin
 func (az *azDisksClient) Delete(resourceGroupName string, diskName string, cancel <-chan struct{}) (<-chan disk.OperationStatusResponse, <-chan error) {
 	/* Write rate limiting */
 	if !az.rateLimiterWriter.TryAccept() {
-		err := createArmRateLimitErr(true, "DiskDelete")
-		errChan := make(chan error, 1)
+		errChan := createARMRateLimitErrChannel(true, "DiskDelete")
 		resultChan := make(chan disk.OperationStatusResponse, 1)
-		errChan <- err
 		resultChan <- disk.OperationStatusResponse{}
 		return resultChan, errChan
 	}
@@ -1398,8 +1296,8 @@ func (az *azDisksClient) Delete(resourceGroupName string, diskName string, cance
 }
 
 func (az *azDisksClient) Get(resourceGroupName string, diskName string) (result disk.Model, err error) {
-	err = createArmRateLimitErr(false, "GetDisk")
 	if !az.rateLimiterReader.TryAccept() {
+		err = createARMRateLimitErr(false, "GetDisk")
 		return
 	}
 
