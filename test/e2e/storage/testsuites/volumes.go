@@ -165,7 +165,7 @@ func (t *volumesTestSuite) defineTests(driver TestDriver, pattern testpatterns.T
 		}
 		config := convertTestConfig(l.config)
 		var fsGroup *int64
-		if framework.NodeOSDistroIs("windows") && dInfo.Capabilities[CapFsGroup] {
+		if !framework.NodeOSDistroIs("windows") && dInfo.Capabilities[CapFsGroup] {
 			fsGroupVal := int64(1234)
 			fsGroup = &fsGroupVal
 		}
