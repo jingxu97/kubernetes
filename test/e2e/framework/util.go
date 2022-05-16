@@ -557,7 +557,11 @@ func LookForStringInPodExecToContainer(ns, podName, containerName string, comman
 		}
 		args = append(args, "--")
 		args = append(args, command...)
-		return RunKubectlOrDie(ns, args...)
+		output, err := RunKubectl(ns, args...)
+		if err != nil {
+			fmt.Errorf("Failed to execute command \"%v\", error \"%v\"", command, err)
+		}
+		return output
 	})
 }
 
