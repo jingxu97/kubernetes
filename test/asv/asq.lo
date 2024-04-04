@@ -1,0 +1,827 @@
+Dec  7 13:37:12.706: INFO: Run UUID, uuid=c3378385-c280-4ba4-8e4d-fefdb706ac1a
+Dec  7 13:37:12.706: INFO: Anthos "Storage Ready" Qualification Ver 1.9.1-0-g608b179!
+Dec  7 13:37:12.707: INFO: Going to parse config, path=asv/test-config
+Dec  7 13:37:12.707: INFO: Running a single test case, testCaseName=volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+Dec  7 13:37:12.707: INFO: DryRun is set to false
+Dec  7 13:37:12.707: INFO: Validating input test config
+Dec  7 13:37:12.707: INFO: Checking report archive base directory
+Dec  7 13:37:12.708: INFO: The --provider flag is not set. Continuing as if --provider=skeleton had been used.
+Dec  7 13:37:12.708: INFO: StorageClass used in qualification, storageClass=standard-rwo
+, volumeSnapshotClass=snapclass
+
+Dec  7 13:37:12.708: INFO: Generated driver info from test config, driver={DriverInfo:{Name:pd-csi-storage-gke-io InTreePluginName: FeatureTag: MaxFileSize:1073741824 SupportedSizeRange:{Max: Min:50Gi} SupportedFsType:map[:{}] SupportedMountOption:map[debug:{} nouid32:{}] RequiredMountOption:map[] Capabilities:map[RWX:false block:false controllerExpansion:false exec:true fsGroup:true multipods:true persistence:true snapshotDataSource:true] RequiredAccessModes:[] TopologyKeys:[] NumAllowedTopologies:0 StressTestOptions:<nil> VolumeSnapshotStressTestOptions:<nil> PerformanceTestOptions:<nil>} StorageClassName:standard-rwo VolumeSnapshotClassName:snapclass}
+Dec  7 13:37:12.751: INFO: Running validation on anthos on-prem Bare Metal environment
+Dec  7 13:37:12.751: INFO: Running in single test case mode, singleTest=volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+Dec  7 13:37:15.003: INFO: Failed to get anthos version, err: the server could not find the requested resource
+Dec  7 13:37:15.003: INFO: GKE Cluster Info {ClusterVersion:v1.22.3-gke.700 AnthosVersion: Platform:Bare Metal SchedulableNodeInfo:[{Name:Node 1 KubeletVersion:v1.22.3-gke.700 OSImage:Container-Optimized OS from Google ContainerRuntimeVersion:containerd://1.5.4 KernelVersion:5.10.68+}]}
+Running Suite: Anthos Storage Validation
+========================================
+Random Seed: 1638913032 - Will randomize all specs
+Will run 4 of 178 specs
+
+SSSSSSSSSDec  7 13:37:15.004: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support existing single file [LinuxOnly]
+SSSSSSSSSSSSSSSSSSSSSSDec  7 13:37:15.005: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should be able to unmount after the subpath directory is deleted [LinuxOnly]
+SSSSSSDec  7 13:37:15.005: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] multi-os should support volume read/write on all available OS
+SSSSSSSSDec  7 13:37:15.005: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] volumes should allow exec of files on the volume
+SSSSDec  7 13:37:15.005: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] cluster-scaling [Disruptive] an existing volume should be accessible after node add/remove
+SSDec  7 13:37:15.005: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support creating multiple subpath from same volumes [Slow]
+SSSSSSSSSDec  7 13:37:15.006: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should access to two volumes with the same volume mode and retain data across pod recreation on different node [LinuxOnly]
+SSSSSSS
+------------------------------
+Anthos Storage Validation CORE [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  
+  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+[BeforeEach] [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:51
+[BeforeEach] [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:185
+STEP: Creating a kubernetes client
+Dec  7 13:37:15.006: INFO: >>> kubeConfig: /usr/local/google/home/jinxu/.kube/config
+STEP: Building a namespace api object, basename snapshotting
+Dec  7 13:37:16.416: INFO: Found PodSecurityPolicies; testing pod creation to see if PodSecurityPolicy is enabled
+Dec  7 13:37:16.512: INFO: No PSP annotation exists on dry run pod; assuming PodSecurityPolicy is disabled
+STEP: Waiting for a default service account to be provisioned in namespace
+[BeforeEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:218
+Dec  7 13:37:16.598: INFO: Creating resource for dynamic PV
+Dec  7 13:37:16.598: INFO: Using claimSize:50Gi, test suite supported size:{ 1Mi}, driver(pd-csi-storage-gke-io) supported size:{ 1Mi} 
+STEP: creating a StorageClass snapshotting-9310tpmsv
+STEP: creating a claim
+Dec  7 13:37:17.288: INFO: Warning: Making PVC: VolumeMode specified as invalid empty string, treating as nil
+STEP: [init] starting a pod to use the claim
+Dec  7 13:37:17.506: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-tester-6vnlb" in namespace "snapshotting-9310" to be "Succeeded or Failed"
+Dec  7 13:37:17.578: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 72.57263ms
+Dec  7 13:37:19.638: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 2.132106811s
+Dec  7 13:37:21.686: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 4.179887697s
+Dec  7 13:37:23.734: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 6.228090914s
+Dec  7 13:37:25.783: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 8.276889594s
+Dec  7 13:37:27.832: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 10.326090485s
+Dec  7 13:37:29.881: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 12.375435594s
+Dec  7 13:37:31.926: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 14.420104601s
+Dec  7 13:37:33.979: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 16.473212105s
+Dec  7 13:37:36.026: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 18.520534694s
+Dec  7 13:37:38.074: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 20.568184965s
+Dec  7 13:37:40.122: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Pending", Reason="", readiness=false. Elapsed: 22.615835027s
+Dec  7 13:37:42.175: INFO: Pod "pvc-snapshottable-tester-6vnlb": Phase="Succeeded", Reason="", readiness=false. Elapsed: 24.669399033s
+STEP: Saw pod success
+Dec  7 13:37:42.175: INFO: Pod "pvc-snapshottable-tester-6vnlb" satisfied condition "Succeeded or Failed"
+Dec  7 13:37:42.322: INFO: Pod pvc-snapshottable-tester-6vnlb has the following logs: 
+Dec  7 13:37:42.322: INFO: Deleting pod "pvc-snapshottable-tester-6vnlb" in namespace "snapshotting-9310"
+Dec  7 13:37:42.404: INFO: Wait up to 5m0s for pod "pvc-snapshottable-tester-6vnlb" to be fully deleted
+Dec  7 13:37:42.448: INFO: Waiting up to timeout=5m0s for PersistentVolumeClaims [pd-csi-storage-gke-io4zcxw] to have phase Bound
+Dec  7 13:37:42.491: INFO: PersistentVolumeClaim pd-csi-storage-gke-io4zcxw found and phase=Bound (43.132295ms)
+STEP: [init] checking the claim
+STEP: [init] checking the PV
+[BeforeEach] 
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:232
+STEP: creating a SnapshotClass
+STEP: creating a dynamic VolumeSnapshot
+Dec  7 13:37:43.428: INFO: Waiting up to 5m0s for VolumeSnapshot snapshot-pxmxv to become ready
+Dec  7 13:37:43.514: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:45.559: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:47.608: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:49.660: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:51.708: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:53.758: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:55.811: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:57.861: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:37:59.909: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:01.959: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:04.009: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:06.056: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:08.104: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:10.158: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:12.206: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:14.257: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:16.303: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:18.353: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:20.405: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:22.453: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:24.502: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:26.550: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:28.612: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:30.663: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:32.712: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:34.773: INFO: VolumeSnapshot snapshot-pxmxv found but is not ready.
+Dec  7 13:38:36.822: INFO: VolumeSnapshot snapshot-pxmxv found and is ready
+Dec  7 13:38:36.822: INFO: WaitUntil finished successfully after 53.394136303s
+Dec  7 13:38:36.870: INFO: received snapshotStatus map[boundVolumeSnapshotContentName:snapcontent-cf4f0f83-a3dd-49f3-9dc9-300efa78cd3b creationTime:2021-12-07T21:37:44Z readyToUse:true restoreSize:50Gi]
+Dec  7 13:38:36.871: INFO: snapshotContentName snapcontent-cf4f0f83-a3dd-49f3-9dc9-300efa78cd3b
+STEP: updating the snapshot content deletion policy to retain
+STEP: recording properties of the preprovisioned snapshot
+Dec  7 13:38:37.041: INFO: Recording snapshot content handle: projects/jinxu-gke-multi-cloud-dev/global/snapshots/snapshot-cf4f0f83-a3dd-49f3-9dc9-300efa78cd3b
+Dec  7 13:38:37.041: INFO: Recording snapshot content annotations: map[]
+Dec  7 13:38:37.041: INFO: Recording snapshot driver: pd.csi.storage.gke.io
+STEP: deleting the snapshot and snapshot content
+STEP: checking the Snapshot has been deleted
+Dec  7 13:38:37.125: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-9310 to be deleted
+Dec  7 13:38:37.194: INFO: volumesnapshots snapshotting-9310 is not found in namespace snapshot-pxmxv and has been deleted
+Dec  7 13:38:37.194: INFO: WaitUntil finished successfully after 69.177752ms
+STEP: checking the Snapshot content has been deleted
+Dec  7 13:38:37.268: INFO: Waiting up to 5m0s for volumesnapshotcontents snapcontent-cf4f0f83-a3dd-49f3-9dc9-300efa78cd3b to be deleted
+Dec  7 13:38:37.311: INFO: volumesnapshotcontents snapcontent-cf4f0f83-a3dd-49f3-9dc9-300efa78cd3b is not found and has been deleted
+Dec  7 13:38:37.311: INFO: WaitUntil finished successfully after 43.833374ms
+STEP: creating a snapshot content with the snapshot handle
+STEP: creating a snapshot with that snapshot content
+Dec  7 13:38:37.437: INFO: Waiting up to 5m0s for VolumeSnapshot pre-provisioned-snapshot-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 to become ready
+Dec  7 13:38:37.504: INFO: VolumeSnapshot pre-provisioned-snapshot-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 found but is not ready.
+Dec  7 13:38:39.555: INFO: VolumeSnapshot pre-provisioned-snapshot-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 found and is ready
+Dec  7 13:38:39.555: INFO: WaitUntil finished successfully after 2.117826127s
+STEP: getting the snapshot and snapshot content
+[It] should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+STEP: checking the snapshot
+STEP: checking the SnapshotContent
+STEP: Modifying source data test
+STEP: modifying the data in the source PVC
+Dec  7 13:38:39.802: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-data-tester-kgw9m" in namespace "snapshotting-9310" to be "Succeeded or Failed"
+Dec  7 13:38:39.867: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 65.325468ms
+Dec  7 13:38:41.916: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 2.114080379s
+Dec  7 13:38:43.965: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 4.163494001s
+Dec  7 13:38:46.011: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 6.208787122s
+Dec  7 13:38:48.064: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 8.261938241s
+Dec  7 13:38:50.124: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 10.321783447s
+Dec  7 13:38:52.171: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 12.368825347s
+Dec  7 13:38:54.220: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 14.417821676s
+Dec  7 13:38:56.276: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Pending", Reason="", readiness=false. Elapsed: 16.474617984s
+Dec  7 13:38:58.327: INFO: Pod "pvc-snapshottable-data-tester-kgw9m": Phase="Succeeded", Reason="", readiness=false. Elapsed: 18.524937351s
+STEP: Saw pod success
+Dec  7 13:38:58.327: INFO: Pod "pvc-snapshottable-data-tester-kgw9m" satisfied condition "Succeeded or Failed"
+Dec  7 13:38:58.442: INFO: Pod pvc-snapshottable-data-tester-kgw9m has the following logs: 
+Dec  7 13:38:58.442: INFO: Deleting pod "pvc-snapshottable-data-tester-kgw9m" in namespace "snapshotting-9310"
+Dec  7 13:38:58.519: INFO: Wait up to 5m0s for pod "pvc-snapshottable-data-tester-kgw9m" to be fully deleted
+STEP: creating a pvc from the snapshot
+STEP: starting a pod to use the claim
+Dec  7 13:39:40.802: INFO: Running '/usr/local/google/home/jinxu/Work/src/k8s.io/kubernetes/_output/bin/kubectl --server=https://34.122.4.112 --kubeconfig=/usr/local/google/home/jinxu/.kube/config --namespace=snapshotting-9310 exec restored-pvc-tester-cv6x9 --namespace=snapshotting-9310 -- cat /mnt/test/data'
+Dec  7 13:39:42.477: INFO: stderr: ""
+Dec  7 13:39:42.477: INFO: stdout: "hello from snapshotting-9310 namespace\n"
+STEP: should delete the VolumeSnapshotContent according to its deletion policy
+STEP: deleting the snapshot
+Dec  7 13:39:42.558: INFO: deleting restored pod "snapshotting-9310"/"restored-pvc-tester-cv6x9"
+Dec  7 13:39:42.657: INFO: deleting restored PVC "snapshotting-9310"/"pvc-mnbtm"
+Dec  7 13:39:42.736: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-9310 to be deleted
+Dec  7 13:39:42.815: INFO: volumesnapshots snapshotting-9310 is not found in namespace snapshotting-9310 and has been deleted
+Dec  7 13:39:42.815: INFO: WaitUntil finished successfully after 78.751721ms
+STEP: checking the SnapshotContent has been deleted
+Dec  7 13:39:42.815: INFO: Waiting up to 5m0s for volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 to be deleted
+Dec  7 13:39:42.882: INFO: volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 has been found and is not deleted
+Dec  7 13:39:44.932: INFO: volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 has been found and is not deleted
+Dec  7 13:39:46.979: INFO: volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 has been found and is not deleted
+Dec  7 13:39:49.026: INFO: volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 has been found and is not deleted
+Dec  7 13:39:51.074: INFO: volumesnapshotcontents pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82 is not found and has been deleted
+Dec  7 13:39:51.074: INFO: WaitUntil finished successfully after 8.259327945s
+[AfterEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:221
+Dec  7 13:39:51.162: INFO: Pod restored-pvc-tester-cv6x9 has the following logs: 
+Dec  7 13:39:51.162: INFO: Deleting pod "restored-pvc-tester-cv6x9" in namespace "snapshotting-9310"
+Dec  7 13:39:51.207: INFO: Wait up to 5m0s for pod "restored-pvc-tester-cv6x9" to be fully deleted
+Dec  7 13:40:13.318: INFO: deleting claim "snapshotting-9310"/"pvc-mnbtm"
+Dec  7 13:40:13.364: INFO: deleting snapshot "snapshotting-9310"/"pre-provisioned-snapshot-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82"
+Dec  7 13:40:13.433: INFO: deleting snapshot content "pre-provisioned-snapcontent-e4dcbc5f-cd0b-4fc8-b295-baa93c89af82"
+Dec  7 13:40:13.478: INFO: deleting snapshot class "snapshotting-9310-snapclass-332fb0b9-aca9-42e6-be23-7bdc80gsr4k"
+Dec  7 13:40:13.545: INFO: Waiting up to 5m0s for volumesnapshotclasses snapshotting-9310-snapclass-332fb0b9-aca9-42e6-be23-7bdc80gsr4k to be deleted
+Dec  7 13:40:13.610: INFO: volumesnapshotclasses snapshotting-9310-snapclass-332fb0b9-aca9-42e6-be23-7bdc80gsr4k is not found and has been deleted
+Dec  7 13:40:13.610: INFO: WaitUntil finished successfully after 64.747991ms
+STEP: Deleting pvc
+Dec  7 13:40:13.745: INFO: Deleting PersistentVolumeClaim "pd-csi-storage-gke-io4zcxw"
+Dec  7 13:40:13.815: INFO: Waiting up to 5m0s for PersistentVolume pvc-b8e222c8-fa25-406e-9a48-daa1f242e276 to get deleted
+Dec  7 13:40:13.865: INFO: PersistentVolume pvc-b8e222c8-fa25-406e-9a48-daa1f242e276 found and phase=Released (50.258336ms)
+Dec  7 13:40:18.919: INFO: PersistentVolume pvc-b8e222c8-fa25-406e-9a48-daa1f242e276 was removed
+STEP: Deleting sc
+[AfterEach] [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:186
+Dec  7 13:40:18.986: INFO: Waiting up to 3m0s for all (but 0) nodes to be ready
+STEP: Destroying namespace "snapshotting-9310" for this suite.
+
+• [SLOW TEST:184.138 seconds]
+Anthos Storage Validation CORE
+/workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/cmd/asv-ts/asv-ts.go:122
+  [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:50
+    volume snapshot controller
+    /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:108
+      
+      /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:225
+        should check snapshot fields, check restore correctly works after modifying source data, check deletion
+        /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+------------------------------
+Dec  7 13:40:19.144: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+SSSSSSDec  7 13:40:19.144: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support non-existent path
+SSSS
+------------------------------
+Anthos Storage Validation CORE [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  
+  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+[BeforeEach] [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:51
+[BeforeEach] [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:185
+STEP: Creating a kubernetes client
+Dec  7 13:40:19.144: INFO: >>> kubeConfig: /usr/local/google/home/jinxu/.kube/config
+STEP: Building a namespace api object, basename snapshotting
+STEP: Waiting for a default service account to be provisioned in namespace
+[BeforeEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:218
+Dec  7 13:40:19.988: INFO: Creating resource for dynamic PV
+Dec  7 13:40:19.989: INFO: Using claimSize:50Gi, test suite supported size:{ 1Mi}, driver(pd-csi-storage-gke-io) supported size:{ 1Mi} 
+STEP: creating a StorageClass snapshotting-9170xp4ps
+STEP: creating a claim
+Dec  7 13:40:20.664: INFO: Warning: Making PVC: VolumeMode specified as invalid empty string, treating as nil
+STEP: [init] starting a pod to use the claim
+Dec  7 13:40:20.892: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-tester-sz7s2" in namespace "snapshotting-9170" to be "Succeeded or Failed"
+Dec  7 13:40:20.970: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 77.839409ms
+Dec  7 13:40:23.021: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 2.129182771s
+Dec  7 13:40:25.072: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 4.179555344s
+Dec  7 13:40:27.117: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 6.225336983s
+Dec  7 13:40:29.165: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 8.273313698s
+Dec  7 13:40:31.232: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 10.340235667s
+Dec  7 13:40:33.281: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 12.388454564s
+Dec  7 13:40:35.330: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 14.438390181s
+Dec  7 13:40:37.377: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 16.484516162s
+Dec  7 13:40:39.423: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 18.530626331s
+Dec  7 13:40:41.471: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 20.578869858s
+Dec  7 13:40:43.520: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Pending", Reason="", readiness=false. Elapsed: 22.628295261s
+Dec  7 13:40:45.568: INFO: Pod "pvc-snapshottable-tester-sz7s2": Phase="Succeeded", Reason="", readiness=false. Elapsed: 24.675660981s
+STEP: Saw pod success
+Dec  7 13:40:45.568: INFO: Pod "pvc-snapshottable-tester-sz7s2" satisfied condition "Succeeded or Failed"
+Dec  7 13:40:45.686: INFO: Pod pvc-snapshottable-tester-sz7s2 has the following logs: 
+Dec  7 13:40:45.686: INFO: Deleting pod "pvc-snapshottable-tester-sz7s2" in namespace "snapshotting-9170"
+Dec  7 13:40:45.761: INFO: Wait up to 5m0s for pod "pvc-snapshottable-tester-sz7s2" to be fully deleted
+Dec  7 13:40:45.804: INFO: Waiting up to timeout=5m0s for PersistentVolumeClaims [pd-csi-storage-gke-iovvww2] to have phase Bound
+Dec  7 13:40:45.847: INFO: PersistentVolumeClaim pd-csi-storage-gke-iovvww2 found and phase=Bound (42.680743ms)
+STEP: [init] checking the claim
+STEP: [init] checking the PV
+[BeforeEach] 
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:232
+STEP: creating a SnapshotClass
+STEP: creating a dynamic VolumeSnapshot
+Dec  7 13:40:46.772: INFO: Waiting up to 5m0s for VolumeSnapshot snapshot-q2d74 to become ready
+Dec  7 13:40:46.851: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:48.899: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:50.949: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:52.999: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:55.051: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:57.097: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:40:59.148: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:01.196: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:03.250: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:05.298: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:07.343: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:09.391: INFO: VolumeSnapshot snapshot-q2d74 found but is not ready.
+Dec  7 13:41:11.440: INFO: VolumeSnapshot snapshot-q2d74 found and is ready
+Dec  7 13:41:11.440: INFO: WaitUntil finished successfully after 24.667753825s
+Dec  7 13:41:11.485: INFO: received snapshotStatus map[boundVolumeSnapshotContentName:snapcontent-647a21d4-4010-49d9-ad22-b5649ba842fe creationTime:2021-12-07T21:40:47Z readyToUse:true restoreSize:50Gi]
+Dec  7 13:41:11.485: INFO: snapshotContentName snapcontent-647a21d4-4010-49d9-ad22-b5649ba842fe
+STEP: updating the snapshot content deletion policy to retain
+STEP: recording properties of the preprovisioned snapshot
+Dec  7 13:41:11.626: INFO: Recording snapshot content handle: projects/jinxu-gke-multi-cloud-dev/global/snapshots/snapshot-647a21d4-4010-49d9-ad22-b5649ba842fe
+Dec  7 13:41:11.626: INFO: Recording snapshot content annotations: map[]
+Dec  7 13:41:11.626: INFO: Recording snapshot driver: pd.csi.storage.gke.io
+STEP: deleting the snapshot and snapshot content
+STEP: checking the Snapshot has been deleted
+Dec  7 13:41:11.700: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-9170 to be deleted
+Dec  7 13:41:11.771: INFO: volumesnapshots snapshotting-9170 is not found in namespace snapshot-q2d74 and has been deleted
+Dec  7 13:41:11.771: INFO: WaitUntil finished successfully after 70.915123ms
+STEP: checking the Snapshot content has been deleted
+Dec  7 13:41:11.852: INFO: Waiting up to 5m0s for volumesnapshotcontents snapcontent-647a21d4-4010-49d9-ad22-b5649ba842fe to be deleted
+Dec  7 13:41:11.896: INFO: volumesnapshotcontents snapcontent-647a21d4-4010-49d9-ad22-b5649ba842fe is not found and has been deleted
+Dec  7 13:41:11.896: INFO: WaitUntil finished successfully after 43.844311ms
+STEP: creating a snapshot content with the snapshot handle
+STEP: creating a snapshot with that snapshot content
+Dec  7 13:41:12.025: INFO: Waiting up to 5m0s for VolumeSnapshot pre-provisioned-snapshot-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 to become ready
+Dec  7 13:41:12.094: INFO: VolumeSnapshot pre-provisioned-snapshot-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 found but is not ready.
+Dec  7 13:41:14.143: INFO: VolumeSnapshot pre-provisioned-snapshot-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 found and is ready
+Dec  7 13:41:14.143: INFO: WaitUntil finished successfully after 2.118051214s
+STEP: getting the snapshot and snapshot content
+[It] should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+STEP: checking the snapshot
+STEP: checking the SnapshotContent
+STEP: Modifying source data test
+STEP: modifying the data in the source PVC
+Dec  7 13:41:14.401: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-data-tester-7zhql" in namespace "snapshotting-9170" to be "Succeeded or Failed"
+Dec  7 13:41:14.468: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 66.680519ms
+Dec  7 13:41:16.516: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 2.114846456s
+Dec  7 13:41:18.563: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 4.161434715s
+Dec  7 13:41:20.612: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 6.211160175s
+Dec  7 13:41:22.674: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 8.272708448s
+Dec  7 13:41:24.721: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 10.319679815s
+Dec  7 13:41:26.768: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 12.367166071s
+Dec  7 13:41:28.820: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 14.41936066s
+Dec  7 13:41:30.869: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Pending", Reason="", readiness=false. Elapsed: 16.468007105s
+Dec  7 13:41:32.965: INFO: Pod "pvc-snapshottable-data-tester-7zhql": Phase="Succeeded", Reason="", readiness=false. Elapsed: 18.563825217s
+STEP: Saw pod success
+Dec  7 13:41:32.965: INFO: Pod "pvc-snapshottable-data-tester-7zhql" satisfied condition "Succeeded or Failed"
+Dec  7 13:41:33.085: INFO: Pod pvc-snapshottable-data-tester-7zhql has the following logs: 
+Dec  7 13:41:33.085: INFO: Deleting pod "pvc-snapshottable-data-tester-7zhql" in namespace "snapshotting-9170"
+Dec  7 13:41:33.169: INFO: Wait up to 5m0s for pod "pvc-snapshottable-data-tester-7zhql" to be fully deleted
+STEP: creating a pvc from the snapshot
+STEP: starting a pod to use the claim
+Dec  7 13:42:15.475: INFO: Running '/usr/local/google/home/jinxu/Work/src/k8s.io/kubernetes/_output/bin/kubectl --server=https://34.122.4.112 --kubeconfig=/usr/local/google/home/jinxu/.kube/config --namespace=snapshotting-9170 exec restored-pvc-tester-8f7sr --namespace=snapshotting-9170 -- cat /mnt/test/data'
+Dec  7 13:42:17.126: INFO: stderr: ""
+Dec  7 13:42:17.126: INFO: stdout: "hello from snapshotting-9170 namespace\n"
+STEP: should delete the VolumeSnapshotContent according to its deletion policy
+STEP: deleting the snapshot
+Dec  7 13:42:17.223: INFO: deleting restored pod "snapshotting-9170"/"restored-pvc-tester-8f7sr"
+Dec  7 13:42:17.302: INFO: deleting restored PVC "snapshotting-9170"/"pvc-7w8nf"
+Dec  7 13:42:17.375: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-9170 to be deleted
+Dec  7 13:42:17.445: INFO: volumesnapshots snapshotting-9170 is not found in namespace snapshotting-9170 and has been deleted
+Dec  7 13:42:17.445: INFO: WaitUntil finished successfully after 70.053319ms
+STEP: checking the SnapshotContent has not been deleted
+Dec  7 13:42:17.445: INFO: Waiting up to 30s for volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 to be deleted
+Dec  7 13:42:17.509: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:18.558: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:19.611: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:20.661: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:21.709: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:22.758: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:23.806: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:24.853: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:25.902: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:26.950: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:28.003: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:29.052: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:30.098: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:31.146: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:32.191: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:33.238: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:34.285: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:35.342: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:36.398: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:37.444: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:38.491: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:39.539: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:40.621: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:41.671: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:42.721: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:43.768: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:44.815: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:45.861: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:46.909: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:47.910: INFO: WaitUntil failed after reaching the timeout 30s
+[AfterEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:221
+Dec  7 13:42:47.994: INFO: Pod restored-pvc-tester-8f7sr has the following logs: 
+Dec  7 13:42:47.994: INFO: Deleting pod "restored-pvc-tester-8f7sr" in namespace "snapshotting-9170"
+Dec  7 13:42:48.040: INFO: Wait up to 5m0s for pod "restored-pvc-tester-8f7sr" to be fully deleted
+Dec  7 13:42:50.139: INFO: deleting claim "snapshotting-9170"/"pvc-7w8nf"
+Dec  7 13:42:50.187: INFO: deleting snapshot "snapshotting-9170"/"pre-provisioned-snapshot-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682"
+Dec  7 13:42:50.256: INFO: deleting snapshot content "pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682"
+Dec  7 13:42:50.464: INFO: Waiting up to 5m0s for volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 to be deleted
+Dec  7 13:42:50.509: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:52.559: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:54.609: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:56.678: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 has been found and is not deleted
+Dec  7 13:42:58.723: INFO: volumesnapshotcontents pre-provisioned-snapcontent-ed4d0479-4f1a-4bc8-bad5-18b9efe3d682 is not found and has been deleted
+Dec  7 13:42:58.723: INFO: WaitUntil finished successfully after 8.259047431s
+Dec  7 13:42:58.724: INFO: deleting snapshot class "snapshotting-9170-snapclass-38b88d4a-c95c-4d98-ab57-293cf2hrnv4"
+Dec  7 13:42:58.799: INFO: Waiting up to 5m0s for volumesnapshotclasses snapshotting-9170-snapclass-38b88d4a-c95c-4d98-ab57-293cf2hrnv4 to be deleted
+Dec  7 13:42:58.862: INFO: volumesnapshotclasses snapshotting-9170-snapclass-38b88d4a-c95c-4d98-ab57-293cf2hrnv4 is not found and has been deleted
+Dec  7 13:42:58.862: INFO: WaitUntil finished successfully after 63.23808ms
+STEP: Deleting pvc
+Dec  7 13:42:58.997: INFO: Deleting PersistentVolumeClaim "pd-csi-storage-gke-iovvww2"
+Dec  7 13:42:59.071: INFO: Waiting up to 5m0s for PersistentVolume pvc-c10ac2d4-0f8e-45b0-b77c-f0175f455b5f to get deleted
+Dec  7 13:42:59.114: INFO: PersistentVolume pvc-c10ac2d4-0f8e-45b0-b77c-f0175f455b5f found and phase=Released (43.031733ms)
+Dec  7 13:43:04.166: INFO: PersistentVolume pvc-c10ac2d4-0f8e-45b0-b77c-f0175f455b5f was removed
+STEP: Deleting sc
+[AfterEach] [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:186
+Dec  7 13:43:04.243: INFO: Waiting up to 3m0s for all (but 0) nodes to be ready
+STEP: Destroying namespace "snapshotting-9170" for this suite.
+
+• [SLOW TEST:165.264 seconds]
+Anthos Storage Validation CORE
+/workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/cmd/asv-ts/asv-ts.go:122
+  [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:50
+    volume snapshot controller
+    /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:108
+      
+      /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:225
+        should check snapshot fields, check restore correctly works after modifying source data, check deletion
+        /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+------------------------------
+Dec  7 13:43:04.408: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+SSSSSSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] provisioning should provision storage with snapshot data source [Feature:VolumeSnapshotDataSource]
+SSSSSSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should fail if subpath file is outside the volume [Slow][LinuxOnly]
+SSSSSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] volumes should store data
+SSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should concurrently access the single read-only volume from pods on the same node
+SSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support restarting containers using directory as subpath [Slow]
+SSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should verify container cannot write to subpath readonly volumes [Slow]
+SSSSSSDec  7 13:43:04.409: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should concurrently access the single volume from pods on the same node [LinuxOnly]
+SSSSSSSSSSSDec  7 13:43:04.410: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support existing directories when readOnly specified in the volumeSource
+SSSDec  7 13:43:04.410: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support restarting containers using file as subpath [Slow][LinuxOnly]
+SSS
+------------------------------
+Anthos Storage Validation CORE [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  
+  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+[BeforeEach] [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:51
+[BeforeEach] [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:185
+STEP: Creating a kubernetes client
+Dec  7 13:43:04.410: INFO: >>> kubeConfig: /usr/local/google/home/jinxu/.kube/config
+STEP: Building a namespace api object, basename snapshotting
+STEP: Waiting for a default service account to be provisioned in namespace
+[BeforeEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:218
+Dec  7 13:43:05.242: INFO: Creating resource for dynamic PV
+Dec  7 13:43:05.242: INFO: Using claimSize:50Gi, test suite supported size:{ 1Mi}, driver(pd-csi-storage-gke-io) supported size:{ 1Mi} 
+STEP: creating a StorageClass snapshotting-1441gntn6
+STEP: creating a claim
+Dec  7 13:43:05.906: INFO: Warning: Making PVC: VolumeMode specified as invalid empty string, treating as nil
+STEP: [init] starting a pod to use the claim
+Dec  7 13:43:06.142: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-tester-wr56z" in namespace "snapshotting-1441" to be "Succeeded or Failed"
+Dec  7 13:43:06.215: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 73.782526ms
+Dec  7 13:43:08.261: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 2.118926491s
+Dec  7 13:43:10.308: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 4.166373143s
+Dec  7 13:43:12.360: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 6.218141138s
+Dec  7 13:43:14.405: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 8.263461245s
+Dec  7 13:43:16.453: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 10.311767213s
+Dec  7 13:43:18.499: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 12.357151837s
+Dec  7 13:43:20.548: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 14.405912133s
+Dec  7 13:43:22.597: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 16.455467741s
+Dec  7 13:43:24.648: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 18.505904988s
+Dec  7 13:43:26.697: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 20.555399048s
+Dec  7 13:43:28.743: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Pending", Reason="", readiness=false. Elapsed: 22.601452906s
+Dec  7 13:43:30.799: INFO: Pod "pvc-snapshottable-tester-wr56z": Phase="Succeeded", Reason="", readiness=false. Elapsed: 24.657151075s
+STEP: Saw pod success
+Dec  7 13:43:30.799: INFO: Pod "pvc-snapshottable-tester-wr56z" satisfied condition "Succeeded or Failed"
+Dec  7 13:43:30.916: INFO: Pod pvc-snapshottable-tester-wr56z has the following logs: 
+Dec  7 13:43:30.916: INFO: Deleting pod "pvc-snapshottable-tester-wr56z" in namespace "snapshotting-1441"
+Dec  7 13:43:30.989: INFO: Wait up to 5m0s for pod "pvc-snapshottable-tester-wr56z" to be fully deleted
+Dec  7 13:43:31.032: INFO: Waiting up to timeout=5m0s for PersistentVolumeClaims [pd-csi-storage-gke-io4c6vz] to have phase Bound
+Dec  7 13:43:31.078: INFO: PersistentVolumeClaim pd-csi-storage-gke-io4c6vz found and phase=Bound (45.226715ms)
+STEP: [init] checking the claim
+STEP: [init] checking the PV
+[BeforeEach] 
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:232
+STEP: creating a SnapshotClass
+STEP: creating a dynamic VolumeSnapshot
+Dec  7 13:43:32.016: INFO: Waiting up to 5m0s for VolumeSnapshot snapshot-9qx9k to become ready
+Dec  7 13:43:32.117: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:34.165: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:36.278: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:38.325: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:40.372: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:42.428: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:44.476: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:46.527: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:48.574: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:50.628: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:52.678: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:54.729: INFO: VolumeSnapshot snapshot-9qx9k found but is not ready.
+Dec  7 13:43:56.784: INFO: VolumeSnapshot snapshot-9qx9k found and is ready
+Dec  7 13:43:56.784: INFO: WaitUntil finished successfully after 24.767751739s
+Dec  7 13:43:56.828: INFO: received snapshotStatus map[boundVolumeSnapshotContentName:snapcontent-1134e784-2cf6-48a1-b983-128655475b05 creationTime:2021-12-07T21:43:33Z readyToUse:true restoreSize:50Gi]
+Dec  7 13:43:56.828: INFO: snapshotContentName snapcontent-1134e784-2cf6-48a1-b983-128655475b05
+[It] should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+STEP: checking the snapshot
+STEP: checking the SnapshotContent
+STEP: Modifying source data test
+STEP: modifying the data in the source PVC
+Dec  7 13:43:57.054: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-data-tester-td82n" in namespace "snapshotting-1441" to be "Succeeded or Failed"
+Dec  7 13:43:57.127: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 72.869693ms
+Dec  7 13:43:59.174: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 2.119658993s
+Dec  7 13:44:01.221: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 4.166787808s
+Dec  7 13:44:03.271: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 6.216352265s
+Dec  7 13:44:05.322: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 8.2669513s
+Dec  7 13:44:07.370: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 10.315740085s
+Dec  7 13:44:09.420: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 12.365280716s
+Dec  7 13:44:11.469: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 14.414253753s
+Dec  7 13:44:13.517: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Pending", Reason="", readiness=false. Elapsed: 16.462114921s
+Dec  7 13:44:15.571: INFO: Pod "pvc-snapshottable-data-tester-td82n": Phase="Succeeded", Reason="", readiness=false. Elapsed: 18.516808261s
+STEP: Saw pod success
+Dec  7 13:44:15.571: INFO: Pod "pvc-snapshottable-data-tester-td82n" satisfied condition "Succeeded or Failed"
+Dec  7 13:44:15.691: INFO: Pod pvc-snapshottable-data-tester-td82n has the following logs: 
+Dec  7 13:44:15.691: INFO: Deleting pod "pvc-snapshottable-data-tester-td82n" in namespace "snapshotting-1441"
+Dec  7 13:44:15.764: INFO: Wait up to 5m0s for pod "pvc-snapshottable-data-tester-td82n" to be fully deleted
+STEP: creating a pvc from the snapshot
+STEP: starting a pod to use the claim
+Dec  7 13:44:58.049: INFO: Running '/usr/local/google/home/jinxu/Work/src/k8s.io/kubernetes/_output/bin/kubectl --server=https://34.122.4.112 --kubeconfig=/usr/local/google/home/jinxu/.kube/config --namespace=snapshotting-1441 exec restored-pvc-tester-z544v --namespace=snapshotting-1441 -- cat /mnt/test/data'
+Dec  7 13:44:59.694: INFO: stderr: ""
+Dec  7 13:44:59.695: INFO: stdout: "hello from snapshotting-1441 namespace\n"
+STEP: should delete the VolumeSnapshotContent according to its deletion policy
+STEP: deleting the snapshot
+Dec  7 13:44:59.771: INFO: deleting restored pod "snapshotting-1441"/"restored-pvc-tester-z544v"
+Dec  7 13:44:59.840: INFO: deleting restored PVC "snapshotting-1441"/"pvc-2t8sn"
+Dec  7 13:44:59.909: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-1441 to be deleted
+Dec  7 13:44:59.974: INFO: volumesnapshots snapshotting-1441 is not found in namespace snapshotting-1441 and has been deleted
+Dec  7 13:44:59.974: INFO: WaitUntil finished successfully after 65.671147ms
+STEP: checking the SnapshotContent has not been deleted
+Dec  7 13:44:59.974: INFO: Waiting up to 30s for volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 to be deleted
+Dec  7 13:45:00.023: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:01.069: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:02.117: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:03.164: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:04.212: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:05.260: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:06.308: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:07.355: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:08.401: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:09.450: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:10.497: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:11.547: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:12.593: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:13.645: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:14.693: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:15.745: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:16.794: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:17.844: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:18.891: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:19.937: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:20.987: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:22.039: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:23.085: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:24.135: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:25.182: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:26.230: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:27.280: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:28.325: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:29.375: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:30.375: INFO: WaitUntil failed after reaching the timeout 30s
+[AfterEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:221
+Dec  7 13:45:30.446: INFO: Pod restored-pvc-tester-z544v has the following logs: 
+Dec  7 13:45:30.446: INFO: Deleting pod "restored-pvc-tester-z544v" in namespace "snapshotting-1441"
+Dec  7 13:45:30.492: INFO: Wait up to 5m0s for pod "restored-pvc-tester-z544v" to be fully deleted
+Dec  7 13:45:32.592: INFO: deleting claim "snapshotting-1441"/"pvc-2t8sn"
+Dec  7 13:45:32.636: INFO: deleting snapshot "snapshotting-1441"/"snapshot-9qx9k"
+Dec  7 13:45:32.680: INFO: deleting snapshot content "snapcontent-1134e784-2cf6-48a1-b983-128655475b05"
+Dec  7 13:45:32.885: INFO: Waiting up to 5m0s for volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 to be deleted
+Dec  7 13:45:32.930: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:34.979: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:37.084: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:39.130: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 has been found and is not deleted
+Dec  7 13:45:41.178: INFO: volumesnapshotcontents snapcontent-1134e784-2cf6-48a1-b983-128655475b05 is not found and has been deleted
+Dec  7 13:45:41.178: INFO: WaitUntil finished successfully after 8.29273054s
+Dec  7 13:45:41.178: INFO: deleting snapshot class "snapshotting-1441-snapclass-0a0754ae-fd0d-4177-bb72-db4494q7ldp"
+Dec  7 13:45:41.240: INFO: Waiting up to 5m0s for volumesnapshotclasses snapshotting-1441-snapclass-0a0754ae-fd0d-4177-bb72-db4494q7ldp to be deleted
+Dec  7 13:45:41.309: INFO: volumesnapshotclasses snapshotting-1441-snapclass-0a0754ae-fd0d-4177-bb72-db4494q7ldp is not found and has been deleted
+Dec  7 13:45:41.309: INFO: WaitUntil finished successfully after 68.286634ms
+STEP: Deleting pvc
+Dec  7 13:45:41.442: INFO: Deleting PersistentVolumeClaim "pd-csi-storage-gke-io4c6vz"
+Dec  7 13:45:41.514: INFO: Waiting up to 5m0s for PersistentVolume pvc-0b146208-978d-44a7-a2c3-1d7c56f37fc6 to get deleted
+Dec  7 13:45:41.557: INFO: PersistentVolume pvc-0b146208-978d-44a7-a2c3-1d7c56f37fc6 found and phase=Released (43.80534ms)
+Dec  7 13:45:46.605: INFO: PersistentVolume pvc-0b146208-978d-44a7-a2c3-1d7c56f37fc6 was removed
+STEP: Deleting sc
+[AfterEach] [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:186
+Dec  7 13:45:46.675: INFO: Waiting up to 3m0s for all (but 0) nodes to be ready
+STEP: Destroying namespace "snapshotting-1441" for this suite.
+
+• [SLOW TEST:162.411 seconds]
+Anthos Storage Validation CORE
+/workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/cmd/asv-ts/asv-ts.go:122
+  [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:50
+    volume snapshot controller
+    /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:108
+      
+      /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:225
+        should check snapshot fields, check restore correctly works after modifying source data, check deletion
+        /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+------------------------------
+Dec  7 13:45:46.821: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+SSDec  7 13:45:46.821: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should fail if subpath with backstepping is outside the volume [Slow][LinuxOnly]
+SSDec  7 13:45:46.821: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support file as subpath [LinuxOnly]
+SSSSSS
+------------------------------
+Anthos Storage Validation CORE [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  
+  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+[BeforeEach] [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:51
+[BeforeEach] [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:185
+STEP: Creating a kubernetes client
+Dec  7 13:45:46.821: INFO: >>> kubeConfig: /usr/local/google/home/jinxu/.kube/config
+STEP: Building a namespace api object, basename snapshotting
+STEP: Waiting for a default service account to be provisioned in namespace
+[BeforeEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:218
+Dec  7 13:45:47.656: INFO: Creating resource for dynamic PV
+Dec  7 13:45:47.656: INFO: Using claimSize:50Gi, test suite supported size:{ 1Mi}, driver(pd-csi-storage-gke-io) supported size:{ 1Mi} 
+STEP: creating a StorageClass snapshotting-32874zskw
+STEP: creating a claim
+Dec  7 13:45:48.315: INFO: Warning: Making PVC: VolumeMode specified as invalid empty string, treating as nil
+STEP: [init] starting a pod to use the claim
+Dec  7 13:45:48.547: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-tester-c66xn" in namespace "snapshotting-3287" to be "Succeeded or Failed"
+Dec  7 13:45:48.629: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 81.064688ms
+Dec  7 13:45:50.679: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 2.131158123s
+Dec  7 13:45:52.729: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 4.181029444s
+Dec  7 13:45:54.774: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 6.226627032s
+Dec  7 13:45:56.825: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 8.277157091s
+Dec  7 13:45:58.870: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 10.322001121s
+Dec  7 13:46:00.919: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 12.371078435s
+Dec  7 13:46:02.968: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 14.419998422s
+Dec  7 13:46:05.018: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 16.470409347s
+Dec  7 13:46:07.069: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 18.521181121s
+Dec  7 13:46:09.115: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 20.567262367s
+Dec  7 13:46:11.163: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Pending", Reason="", readiness=false. Elapsed: 22.615034755s
+Dec  7 13:46:13.211: INFO: Pod "pvc-snapshottable-tester-c66xn": Phase="Succeeded", Reason="", readiness=false. Elapsed: 24.663344166s
+STEP: Saw pod success
+Dec  7 13:46:13.211: INFO: Pod "pvc-snapshottable-tester-c66xn" satisfied condition "Succeeded or Failed"
+Dec  7 13:46:13.328: INFO: Pod pvc-snapshottable-tester-c66xn has the following logs: 
+Dec  7 13:46:13.328: INFO: Deleting pod "pvc-snapshottable-tester-c66xn" in namespace "snapshotting-3287"
+Dec  7 13:46:13.410: INFO: Wait up to 5m0s for pod "pvc-snapshottable-tester-c66xn" to be fully deleted
+Dec  7 13:46:13.454: INFO: Waiting up to timeout=5m0s for PersistentVolumeClaims [pd-csi-storage-gke-iod8jdv] to have phase Bound
+Dec  7 13:46:13.498: INFO: PersistentVolumeClaim pd-csi-storage-gke-iod8jdv found and phase=Bound (43.993806ms)
+STEP: [init] checking the claim
+STEP: [init] checking the PV
+[BeforeEach] 
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:232
+STEP: creating a SnapshotClass
+STEP: creating a dynamic VolumeSnapshot
+Dec  7 13:46:14.430: INFO: Waiting up to 5m0s for VolumeSnapshot snapshot-86lq2 to become ready
+Dec  7 13:46:14.503: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:16.555: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:18.600: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:20.648: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:22.706: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:24.757: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:26.807: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:28.853: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:30.902: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:32.950: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:34.998: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:37.050: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:39.098: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:41.150: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:43.205: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:45.256: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:47.306: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:49.354: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:51.404: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:53.450: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:55.500: INFO: VolumeSnapshot snapshot-86lq2 found but is not ready.
+Dec  7 13:46:57.549: INFO: VolumeSnapshot snapshot-86lq2 found and is ready
+Dec  7 13:46:57.549: INFO: WaitUntil finished successfully after 43.119154055s
+Dec  7 13:46:57.593: INFO: received snapshotStatus map[boundVolumeSnapshotContentName:snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 creationTime:2021-12-07T21:46:15Z readyToUse:true restoreSize:50Gi]
+Dec  7 13:46:57.594: INFO: snapshotContentName snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5
+[It] should check snapshot fields, check restore correctly works after modifying source data, check deletion
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+STEP: checking the snapshot
+STEP: checking the SnapshotContent
+STEP: Modifying source data test
+STEP: modifying the data in the source PVC
+Dec  7 13:46:57.810: INFO: Waiting up to 15m0s for pod "pvc-snapshottable-data-tester-29chw" in namespace "snapshotting-3287" to be "Succeeded or Failed"
+Dec  7 13:46:57.877: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 67.074743ms
+Dec  7 13:46:59.923: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 2.113129252s
+Dec  7 13:47:01.974: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 4.16379493s
+Dec  7 13:47:04.026: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 6.21551572s
+Dec  7 13:47:06.075: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 8.264624255s
+Dec  7 13:47:08.126: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 10.315415148s
+Dec  7 13:47:10.176: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 12.365946108s
+Dec  7 13:47:12.228: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 14.417526343s
+Dec  7 13:47:14.278: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Pending", Reason="", readiness=false. Elapsed: 16.467272022s
+Dec  7 13:47:16.327: INFO: Pod "pvc-snapshottable-data-tester-29chw": Phase="Succeeded", Reason="", readiness=false. Elapsed: 18.51647983s
+STEP: Saw pod success
+Dec  7 13:47:16.327: INFO: Pod "pvc-snapshottable-data-tester-29chw" satisfied condition "Succeeded or Failed"
+Dec  7 13:47:16.445: INFO: Pod pvc-snapshottable-data-tester-29chw has the following logs: 
+Dec  7 13:47:16.445: INFO: Deleting pod "pvc-snapshottable-data-tester-29chw" in namespace "snapshotting-3287"
+Dec  7 13:47:16.548: INFO: Wait up to 5m0s for pod "pvc-snapshottable-data-tester-29chw" to be fully deleted
+STEP: creating a pvc from the snapshot
+STEP: starting a pod to use the claim
+Dec  7 13:47:58.808: INFO: Running '/usr/local/google/home/jinxu/Work/src/k8s.io/kubernetes/_output/bin/kubectl --server=https://34.122.4.112 --kubeconfig=/usr/local/google/home/jinxu/.kube/config --namespace=snapshotting-3287 exec restored-pvc-tester-s4g7p --namespace=snapshotting-3287 -- cat /mnt/test/data'
+Dec  7 13:48:00.528: INFO: stderr: ""
+Dec  7 13:48:00.528: INFO: stdout: "hello from snapshotting-3287 namespace\n"
+STEP: should delete the VolumeSnapshotContent according to its deletion policy
+STEP: deleting the snapshot
+Dec  7 13:48:00.604: INFO: deleting restored pod "snapshotting-3287"/"restored-pvc-tester-s4g7p"
+Dec  7 13:48:00.685: INFO: deleting restored PVC "snapshotting-3287"/"pvc-kpmx2"
+Dec  7 13:48:00.756: INFO: Waiting up to 5m0s for volumesnapshots snapshotting-3287 to be deleted
+Dec  7 13:48:00.823: INFO: volumesnapshots snapshotting-3287 is not found in namespace snapshotting-3287 and has been deleted
+Dec  7 13:48:00.823: INFO: WaitUntil finished successfully after 67.320182ms
+STEP: checking the SnapshotContent has been deleted
+Dec  7 13:48:00.823: INFO: Waiting up to 5m0s for volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 to be deleted
+Dec  7 13:48:00.891: INFO: volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 has been found and is not deleted
+Dec  7 13:48:02.939: INFO: volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 has been found and is not deleted
+Dec  7 13:48:04.987: INFO: volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 has been found and is not deleted
+Dec  7 13:48:07.041: INFO: volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 has been found and is not deleted
+Dec  7 13:48:09.090: INFO: volumesnapshotcontents snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5 is not found and has been deleted
+Dec  7 13:48:09.090: INFO: WaitUntil finished successfully after 8.26676221s
+[AfterEach] volume snapshot controller
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:221
+Dec  7 13:48:09.171: INFO: Pod restored-pvc-tester-s4g7p has the following logs: 
+Dec  7 13:48:09.171: INFO: Deleting pod "restored-pvc-tester-s4g7p" in namespace "snapshotting-3287"
+Dec  7 13:48:09.215: INFO: Wait up to 5m0s for pod "restored-pvc-tester-s4g7p" to be fully deleted
+Dec  7 13:48:31.315: INFO: deleting claim "snapshotting-3287"/"pvc-kpmx2"
+Dec  7 13:48:31.358: INFO: deleting snapshot "snapshotting-3287"/"snapshot-86lq2"
+Dec  7 13:48:31.425: INFO: deleting snapshot content "snapcontent-f94a8936-13fc-4f67-ab94-f1ae7ea48fe5"
+Dec  7 13:48:31.468: INFO: deleting snapshot class "snapshotting-3287-snapclass-a2504404-fd8b-428f-a248-586a11v2dvk"
+Dec  7 13:48:31.534: INFO: Waiting up to 5m0s for volumesnapshotclasses snapshotting-3287-snapclass-a2504404-fd8b-428f-a248-586a11v2dvk to be deleted
+Dec  7 13:48:31.601: INFO: volumesnapshotclasses snapshotting-3287-snapclass-a2504404-fd8b-428f-a248-586a11v2dvk is not found and has been deleted
+Dec  7 13:48:31.601: INFO: WaitUntil finished successfully after 67.177737ms
+STEP: Deleting pvc
+Dec  7 13:48:31.733: INFO: Deleting PersistentVolumeClaim "pd-csi-storage-gke-iod8jdv"
+Dec  7 13:48:31.802: INFO: Waiting up to 5m0s for PersistentVolume pvc-a063be98-ef52-45e3-ad97-e63e42b5e9a0 to get deleted
+Dec  7 13:48:31.847: INFO: PersistentVolume pvc-a063be98-ef52-45e3-ad97-e63e42b5e9a0 found and phase=Released (44.569603ms)
+Dec  7 13:48:36.908: INFO: PersistentVolume pvc-a063be98-ef52-45e3-ad97-e63e42b5e9a0 was removed
+STEP: Deleting sc
+[AfterEach] [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/framework/framework.go:186
+Dec  7 13:48:36.987: INFO: Waiting up to 3m0s for all (but 0) nodes to be ready
+STEP: Destroying namespace "snapshotting-3287" for this suite.
+
+• [SLOW TEST:170.316 seconds]
+Anthos Storage Validation CORE
+/workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/cmd/asv-ts/asv-ts.go:122
+  [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource]
+  /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/framework/testsuite.go:50
+    volume snapshot controller
+    /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:108
+      
+      /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:225
+        should check snapshot fields, check restore correctly works after modifying source data, check deletion
+        /workspace/louhi_ws/kubernetes-csi/anthos-storage-qualification-suite/vendor/k8s.io/kubernetes/test/e2e/storage/testsuites/snapshottable.go:243
+------------------------------
+Dec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion
+SSSSSSSSSSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should access to two volumes with the same volume mode and retain data across pod recreation on the same node [LinuxOnly]
+SSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should fail if non-existent subpath is outside the volume [Slow][LinuxOnly]
+SSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support readOnly file specified in the volumeMount [LinuxOnly]
+SSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support existing directory
+SSSSSSSSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should fail if subpath directory is outside the volume [Slow][LinuxOnly]
+SSSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] subPath should support readOnly directory specified in the volumeMount
+SSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] volumeIO should write files of various sizes, verify size, validate content [Slow][LinuxOnly]
+SSSSSDec  7 13:48:37.137: INFO: Spec did complete, spec=[Top Level] Anthos Storage Validation CORE [Testpattern: Dynamic PV (default fs)] alpha-features VolumeSnapshot alpha CRD should not be deployed to the cluster
+SSDec  7 13:48:37.137: INFO: Test ends
+Dec  7 13:48:37.137: INFO: Ran suite, suiteId=
+Dec  7 13:48:37.137: INFO: Finished suite, description=Anthos Storage Validation. Test finished: true
+
+
+Hooray! We've done running Anthos Storage Ready examination for your cluster. Here's the result.
+
+[Core]
+  - Skipped [[Testpattern: Dynamic PV (default fs)] volumeIO should write files of various sizes, verify size, validate content [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support existing directory]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should be able to unmount after the subpath directory is deleted [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support creating multiple subpath from same volumes [Slow]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] volumes should store data]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should fail if subpath with backstepping is outside the volume [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support non-existent path]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] alpha-features VolumeSnapshot alpha CRD should not be deployed to the cluster]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support readOnly file specified in the volumeMount [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support existing single file [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support existing directories when readOnly specified in the volumeSource]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should verify container cannot write to subpath readonly volumes [Slow]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should fail if non-existent subpath is outside the volume [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should fail if subpath directory is outside the volume [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support readOnly directory specified in the volumeMount]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support restarting containers using file as subpath [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support file as subpath [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should fail if subpath file is outside the volume [Slow][LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should concurrently access the single read-only volume from pods on the same node]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] volumes should allow exec of files on the volume]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] cluster-scaling [Disruptive] an existing volume should be accessible after node add/remove]
+
+  - Skipped [[Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should access to two volumes with the same volume mode and retain data across pod recreation on the same node [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should concurrently access the single volume from pods on the same node [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (filesystem volmode)] multiVolume [Slow] should access to two volumes with the same volume mode and retain data across pod recreation on different node [LinuxOnly]]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] multi-os should support volume read/write on all available OS]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] subPath should support restarting containers using directory as subpath [Slow]]
+
+[Snapshot]
+  - Passed [[Testpattern: Pre-provisioned Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion]
+
+  - Skipped [[Testpattern: Dynamic PV (default fs)] provisioning should provision storage with snapshot data source [Feature:VolumeSnapshotDataSource]]
+
+  - Passed [[Testpattern: Pre-provisioned Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion]
+
+  - Passed [[Testpattern: Dynamic Snapshot (retain policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion]
+
+  - Passed [[Testpattern: Dynamic Snapshot (delete policy)] snapshottable[Feature:VolumeSnapshotDataSource] volume snapshot controller  should check snapshot fields, check restore correctly works after modifying source data, check deletion]
+
+JUnit report was created: /tmp/c3378385-c280-4ba4-8e4d-fefdb706ac1a055629828/asv-junit.xml
+
+Ran 4 of 178 Specs in 682.134 seconds
+SUCCESS! -- 4 Passed | 0 Failed | 0 Pending | 174 Skipped
+Dec  7 13:48:37.139: INFO: Generating HTML Report
+Dec  7 13:48:37.140: INFO: Report will be archived, path=/usr/local/google/home/jinxu/Work/anthos-csi-gke-pd.csi.storage.gke.io-D2021-12-07T13-48-37-T31-F27.tar.gz
+Dec  7 13:48:37.166: INFO: Cleaning up temporary directory for the run, dir=/tmp/c3378385-c280-4ba4-8e4d-fefdb706ac1a055629828
